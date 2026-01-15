@@ -16,7 +16,11 @@ inline void registerRoutes(crow::SimpleApp &app)
 
     CameraClient myMainCamera;
     
-
+    myMainCamera.setupFolder("Test2");
+    myMainCamera.connect();
+    myMainCamera.capturePhoto();
+    myMainCamera.capturePhoto();
+    myMainCamera.capturePhoto();
 
              
     

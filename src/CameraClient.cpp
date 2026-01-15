@@ -41,6 +41,7 @@ void CameraClient::setupFolder(std::string folderName)
 
 bool  CameraClient::connect()
     {
+        kill_auto_mount();
         std::cout << "Connection Attempt ... " << std::endl;
         int ret = gp_camera_init(m_camera.get(), m_context.get());
         if (ret < GP_OK)

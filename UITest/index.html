@@ -137,6 +137,7 @@
 
         <button id="btn-picture">Take Picture</button>
         <button id="btn-collage">Create Collage</button>
+        <button id="btn-list">Get Photo List</button>
         <button id="btn-print">Print</button>
         <button id="btn-disconnect">Disconnect</button>
     </div>
@@ -153,6 +154,7 @@
         const btnCollage = document.getElementById('btn-collage');
         const btnPrint = document.getElementById('btn-print');
         const btnDisconnect = document.getElementById('btn-disconnect');
+        const btnlist = document.getElementById('btn-list');
         const fileTxt = document.getElementById('file-txt');
 
         function sleep(ms) {
@@ -220,11 +222,19 @@
         btnPicture.addEventListener('click', async () => {
             const data = await callApi('takePhoto');
             if (data && data.captureStatus == "success") {
-                alert(data.file_path);
             } else {
-                btnPicture.innerHTML = "Error Taking Photo";
+                btnPicture.textContent = "Error Taking Photo";
                 sleep(1500);
-                btnPicture.innerHTML = "Take Picture";
+                btnPicture.textContent = "Take Picture";
+            }
+        });
+        // 3. get list
+        btnPicture.addEventListener('click', async () => {
+            const data = await callApi('getPhotoList');
+            if (data && data.captureStatus == "success") {
+                console.log(data);
+            } else {
+                console.error(data);
             }
         });
 

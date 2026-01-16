@@ -38,6 +38,7 @@ FetchContent_MakeAvailable(json)
 set(SOURCE_FILES 
     src/main.cpp 
     src/CameraClient.cpp
+    src/CollageCreate.cpp
 )
 
 add_executable(camera_server ${SOURCE_FILES})

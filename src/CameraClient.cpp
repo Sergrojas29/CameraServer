@@ -44,7 +44,9 @@ bool CameraClient::setupFolder(std::string folderName)
 
         m_photo_count = count;
         return true;
-    }else{
+    }
+    else
+    {
         std::filesystem::create_directories(folderName);
         m_save_path = folderName;
         std::cout << "Saving photos to :" << m_save_path << "\n";
@@ -55,16 +57,24 @@ bool CameraClient::setupFolder(std::string folderName)
 
 bool CameraClient::connect()
 {
-    kill_auto_mount();
-    std::cout << "Connection Attempt ... " << std::endl;
-    int ret = gp_camera_init(m_camera.get(), m_context.get());
-    if (ret < GP_OK)
+    if (isConnected())
     {
-        std::cout << "Connection Error: " << ret << std::endl;
-        return false;
+        // Connected Previously
+        return true;
     }
-    std::cout << "Connected Successfully!" << std::endl;
-    return true;
+    else
+    {
+        kill_auto_mount();
+        std::cout << "Connection Attempt ... " << std::endl;
+        int ret = gp_camera_init(m_camera.get(), m_context.get());
+        if (ret < GP_OK)
+        {
+            std::cout << "Connection Error: " << ret << std::endl;
+            return false;
+        }
+        std::cout << "Connected Successfully!" << std::endl;
+        return true;
+    }
 }
 
 std::string CameraClient::capturePhoto()
@@ -118,6 +128,21 @@ std::string CameraClient::capturePhoto()
 
 std::vector<std::string> CameraClient::getPhotoList()
 {
-    std::vector<std::string> list;
-    return list;
+    std::vector<std::string> file_list;
+    try
+    {
+        for (const auto &entry : std::filesystem::directory_iterator(m_save_path))
+        {
+            if (std::filesystem::is_regular_file(entry.status()))
+            {
+                file_list.push_back(entry.path().filename().string());
+            }
+        }
+    }
+    catch (const std::filesystem::filesystem_error &e)
+    {
+        std::cerr << "Filesystem error: " << e.what() << std::endl;
+    }
+    return file_list;
 }
+

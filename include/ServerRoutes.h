@@ -1,6 +1,7 @@
 #pragma once
 #include "crow.h"
 #include "CameraClient.h"
+#include "CollageCreate.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
 
@@ -23,7 +24,7 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam)
     return res;
  });
 
-     // Take Photo
+     // setup Folder
     CROW_ROUTE(app, "/api/setupFolder/<string>")([&cam](std::string folderName){
         
         nlohmann::json data;
@@ -59,15 +60,19 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam)
     return res; });
 
     // Create Collage
-    CROW_ROUTE(app, "/api/createCollage")([]()
+    CROW_ROUTE(app, "/api/createCollage")([&cam]()
                                           {
         nlohmann::json j;
         j["service"] = "CameraServer";
         j["isConnected"] = "True";
-        
-        std::cout << "Call to Create Collage\n";
-    crow::response res(j.dump());
-    res.add_header("Access-Control-Allow-Origin", "*"); 
+
+        CollageCreate::SinglePortraitCollage(cam.m_save_path,"img_2.jpg","Overlay-FlamaLama.png");
+
+          
+
+
+        crow::response res(j.dump());
+        res.add_header("Access-Control-Allow-Origin", "*"); 
     
     return res; });
 

@@ -2,43 +2,56 @@
 #include "crow.h"
 #include "CameraClient.h"
 #include <nlohmann/json.hpp>
+#include <fstream>
 
 // inline header only
-inline void registerRoutes(crow::SimpleApp &app)
+inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam)
 {
 
     // Status Check
-    CROW_ROUTE(app, "/api/connect")([]()
+    CROW_ROUTE(app, "/api/connect")([&cam]()
                                    {
     nlohmann::json j;
+    bool success = cam.connect();
+
+
     j["service"] = "CameraServer";
-    j["isConnected"] = "True";
-
-    CameraClient myMainCamera;
+    j["isConnected"] = success ? "true" : "false";
     
-    myMainCamera.setupFolder("Test2");
-    myMainCamera.connect();
-    myMainCamera.capturePhoto();
-    myMainCamera.capturePhoto();
-    myMainCamera.capturePhoto();
-
-             
-    
-
     crow::response res(j.dump());
     res.add_header("Access-Control-Allow-Origin", "*"); 
     return res;
  });
 
+     // Take Photo
+    CROW_ROUTE(app, "/api/setupFolder/<string>")([&cam](std::string folderName){
+        
+        nlohmann::json data;
+        data["service"] = "CameraServer";
+        data["operation"] = "setupfolder";
+        
+        
+        bool success = cam.setupFolder(folderName);
+        
+        data["captureStatus"] = success ? "success" : "error";
+        data["file_path"] = success ? folderName : "error";
+
+    crow::response res(data.dump());
+    res.add_header("Access-Control-Allow-Origin", "*"); 
+    
+    return res; });
+
     // Take Photo
-    CROW_ROUTE(app, "/api/takePhoto")([]()
+    CROW_ROUTE(app, "/api/takePhoto")([&cam]()
                                       {
 
         nlohmann::json j;
         j["service"] = "CameraServer";
-        j["isConnected"] = "True";
-
-    std::cout << "Call to Take Photo\n";
+        
+        std::string file_path = cam.capturePhoto();
+        
+        j["captureStatus"] = (file_path == "Error") ? "Error" : "success";
+        j["file_path"] = (file_path == "Error") ? "Error" : file_path;
 
     crow::response res(j.dump());
     res.add_header("Access-Control-Allow-Origin", "*"); 

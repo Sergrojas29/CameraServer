@@ -8,12 +8,14 @@
 
 int main() {
 
+    //Init Camera Class to be permanent
+    CameraClient myMainCamera; 
 
     //Initialize Server
     crow::SimpleApp app;
 
     //Register Routes
-    registerRoutes(app);
+    registerRoutes(app, myMainCamera);
 
     // 4. Run
     std::cout << "Server starting on port 8080..." << std::endl;

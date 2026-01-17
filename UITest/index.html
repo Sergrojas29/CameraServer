@@ -9,20 +9,14 @@
         /* --- CSS Styles --- */
         :root {
             /* Nice Color Palette */
-            --bg-color: #1a202c;
-            /* Dark Slate */
-            --card-color: #2d3748;
-            /* Lighter Slate */
-            --text-color: #f7fafc;
-            /* Off-white */
-            --btn-default: #5a67d8;
-            /* Indigo */
-            --btn-hover: #4c51bf;
-            /* Darker Indigo */
-            --btn-success: #48bb78;
-            /* Green */
-            --btn-danger: #e53e3e;
-            /* Red */
+            --bg-color: #1a202c;       /* Dark Slate */
+            --card-color: #2d3748;     /* Lighter Slate */
+            --text-color: #f7fafc;     /* Off-white */
+            --btn-default: #5a67d8;    /* Indigo */
+            --btn-hover: #4c51bf;      /* Darker Indigo */
+            --btn-success: #48bb78;    /* Green */
+            --btn-danger: #e53e3e;     /* Red */
+            --thumb-bg: #4a5568;       /* Placeholder gray */
         }
 
         body {
@@ -44,7 +38,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            width: 300px;
+            width: 320px; /* Slightly wider to accommodate thumbs */
             text-align: center;
         }
 
@@ -52,7 +46,14 @@
             font-size: 1.5rem;
             color: #e2e8f0;
             text-align: center;
+            margin-top: 0;
+        }
 
+        #file-txt {
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #a0aec0;
+            min-height: 1.2em;
         }
 
         button {
@@ -76,7 +77,13 @@
             transform: translateY(0);
         }
 
-        /* --- New Input Group Styling --- */
+        /* Disable state for Take Picture initially */
+        #btn-picture:not(.connected) {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* --- Input Group Styling --- */
         .input-group {
             display: flex;
             gap: 10px;
@@ -86,7 +93,8 @@
         .input-group input {
             flex-grow: 1;
             /* Input takes remaining width */
-            padding: 0 12px;
+            /* FIX: Increased padding to match button height better */
+            padding: 12px 12px; 
             border-radius: 6px;
             border: 1px solid #4a5568;
             background-color: #1a202c;
@@ -100,10 +108,34 @@
             border-color: var(--btn-default);
         }
 
-        /* Status classes */
+        /* --- Thumbnail Styles --- */
+        .thumbnail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: -5px; /* Pull closer to the collage button */
+        }
+
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            background-color: var(--thumb-bg);
+            border-radius: 6px;
+            object-fit: cover;
+            border: 2px solid transparent;
+        }
+        
+        .thumbnail.loaded {
+             border-color: var(--btn-success);
+        }
+
+
+        /* --- Status classes --- */
         button.connected {
             background-color: var(--btn-success) !important;
             box-shadow: 0 0 10px var(--btn-success);
+            opacity: 1 !important;
+            cursor: pointer !important;
         }
 
         /* New Error Class for Red State */
@@ -112,11 +144,11 @@
             box-shadow: 0 0 10px var(--btn-danger);
         }
 
-        #btn-disconnect {
+        #btn-disconnect, #btn-end-session {
             background-color: var(--btn-danger);
         }
 
-        #btn-disconnect:hover {
+        #btn-disconnect:hover, #btn-end-session:hover {
             background-color: #c53030;
         }
     </style>
@@ -126,30 +158,56 @@
 
     <div class="container">
         <h1>Device Control</h1>
-        <div id="file-txt"> Selected File</div>
+        <div id="file-txt">Selected File: None</div>
 
-        <button id="btn-status">Check Status</button>
+        <button id="btn-connect">Connect</button>
 
         <div class="input-group">
             <button id="btn-setup">Setup</button>
             <input type="text" id="input-folder" placeholder="Folder Name">
         </div>
 
+        <button id="btn-check-status">Check Status</button>
+        <button id="btn-create-session">Create Session</button>
+
         <button id="btn-picture">Take Picture</button>
         <button id="btn-collage">Create Collage</button>
+
+        <div class="thumbnail-row">
+            <img id="thumb-1" class="thumbnail" src="" alt="">
+            <img id="thumb-2" class="thumbnail" src="" alt="">
+            <img id="thumb-3" class="thumbnail" src="" alt="">
+            <img id="thumb-4" class="thumbnail" src="" alt="">
+        </div>
+
         <button id="btn-list">Get Photo List</button>
         <button id="btn-print">Print</button>
+        
+        <button id="btn-end-session">End Session</button>
         <button id="btn-disconnect">Disconnect</button>
     </div>
 
     <script>
         // --- JavaScript Logic ---
         const BASE_URL = 'http://localhost:8080/api';
+        let isSessionActive = false; // State to track session
 
-        // Select buttons
-        const btnStatus = document.getElementById('btn-status');
-        const btnSetup = document.getElementById('btn-setup'); // New Button
-        const inputFolder = document.getElementById('input-folder'); // New Input
+        // Select buttons & elements
+        const btnConnect = document.getElementById('btn-connect'); // Renamed
+        const btnSetup = document.getElementById('btn-setup');
+        const inputFolder = document.getElementById('input-folder');
+        
+        // New Elements
+        const btnCheckStatus = document.getElementById('btn-check-status');
+        const btnCreateSession = document.getElementById('btn-create-session');
+        const btnEndSession = document.getElementById('btn-end-session');
+        const thumbnails = [
+            document.getElementById('thumb-1'),
+            document.getElementById('thumb-2'),
+            document.getElementById('thumb-3'),
+            document.getElementById('thumb-4')
+        ];
+
         const btnPicture = document.getElementById('btn-picture');
         const btnCollage = document.getElementById('btn-collage');
         const btnPrint = document.getElementById('btn-print');
@@ -163,6 +221,8 @@
 
         async function callApi(endpoint) {
             try {
+                // Note: You might need to add method: 'POST' for some of these new endpoints 
+                // depending on your server implementation. Using default GET for now based on previous code.
                 const response = await fetch(`${BASE_URL}/${endpoint}`);
                 if (!response.ok) throw new Error(`Error: ${response.status}`);
                 const data = await response.json();
@@ -170,46 +230,40 @@
                 return data;
             } catch (error) {
                 console.error("API Call Failed:", error);
-                alert("Failed to connect to API");
+                // alert("Failed to connect to API"); // Optional: annoying during dev
                 return null;
             }
         }
 
+        // --- Event Listeners ---
 
-
-
-        // 1. Status Button Logic
-        btnStatus.addEventListener('click', async () => {
+        // 1. Connect Button Logic (formerly Status)
+        btnConnect.addEventListener('click', async () => {
             const data = await callApi('connect');
             if (data && data.isConnected === "true") {
-                btnStatus.classList.add('connected');
-                btnStatus.textContent = "Connected";
+                btnConnect.classList.add('connected');
+                btnConnect.textContent = "Connected";
             } else {
-                btnStatus.classList.remove('connected');
-                btnStatus.textContent = "Connection Error";
+                btnConnect.classList.remove('connected');
+                btnConnect.textContent = "Connection Error";
             }
         });
 
-        // 2. NEW Setup Folder Logic
-        btnSetup.addEventListener('click', async (event) => {
-
+        // 2. Setup Folder Logic
+        btnSetup.addEventListener('click', async () => {
             const folderName = inputFolder.value;
-
-            // Simple validation
             if (!folderName) {
                 alert("Please enter a folder name");
                 return;
             }
-
+            btnSetup.textContent = "Saving...";
             const data = await callApi(`setupFolder/${folderName}`);
 
-            console.log(data);
-
-            // UPDATED: Checks for captureStatus == "success"
             if (data && data.captureStatus == "success") {
                 btnSetup.classList.remove('error');
                 btnSetup.classList.add('connected');
-                fileTxt.textContent = data.file_path;
+                // Assuming data.file_path is sent back on success
+                if(data.file_path) fileTxt.textContent = "Selected File: " + data.file_path;
                 btnSetup.textContent = "Saved";
             } else {
                 btnSetup.classList.remove('connected');
@@ -218,43 +272,125 @@
             }
         });
 
-        // 3. Other Actions
-        btnPicture.addEventListener('click', async () => {
-            const data = await callApi('takePhoto');
-            if (data && data.captureStatus == "success") {
-            } else {
-                btnPicture.textContent = "Error Taking Photo";
-                sleep(1500);
-                btnPicture.textContent = "Take Picture";
-            }
+        // --- NEW BUTTONS LOGIC ---
+
+        // Check Status
+        btnCheckStatus.addEventListener('click', async () => {
+             // Just logs the response as requested
+            await callApi('checkStatus');
         });
-        // 3. get list
-        btnPicture.addEventListener('click', async () => {
-            const data = await callApi('getPhotoList');
-            if (data && data.captureStatus == "success") {
-                console.log(data);
+
+        // Create Session
+        btnCreateSession.addEventListener('click', async () => {
+            btnCreateSession.textContent = "Creating...";
+            const data = await callApi('createSession');
+            console.log(data)
+            
+            // ASSUMPTION: Server returns { success: true } on creation
+            if (data && (data.sessionCreated === "success")) {
+                isSessionActive = true;
+                // Turn Take Picture green/active
+                btnPicture.classList.add('connected');
+                btnCreateSession.textContent = "Session Active";
+                btnCreateSession.classList.add('connected');
+
             } else {
-                console.error(data);
+                 btnCreateSession.textContent = "Failed";
+                 btnCreateSession.classList.add('error');
+
             }
         });
 
-        btnCollage.addEventListener('click', () => callApi('createCollage'));
+        // End Session
+        btnEndSession.addEventListener('click', async () => {
+             const data = await callApi('endSession');
+             // ASSUMPTION: Server returns success
+             if(data && (data.success === true || data.status === "session ended")) {
+                 isSessionActive = false;
+                 // Remove green from Take Picture
+                 btnPicture.classList.remove('connected');
+                 fileTxt.textContent = "Selected File: None";
+                 // Clear thumbnails
+                 thumbnails.forEach(thumb => {
+                    thumb.src = "";
+                    thumb.classList.remove('loaded');
+                 });
+             }
+        });
+
+
+        // --- EXISTING MODIFIED LOGIC ---
+
+        // Take Picture
+        btnPicture.addEventListener('click', async () => {
+            if(!isSessionActive) {
+                alert("Please 'Create Session' first.");
+                return;
+            }
+
+            btnPicture.textContent = "Taking...";
+            const data = await callApi('takePhoto');
+            if (data && data.captureStatus == "success") {
+                 btnPicture.textContent = "Take Picture";
+                 // Optional feedback
+                 btnPicture.classList.add('connected');
+                 setTimeout(() => btnPicture.classList.remove('connected'), 500);
+
+            } else {
+                btnPicture.textContent = "Error";
+                btnPicture.classList.add('error');
+                await sleep(1500);
+                btnPicture.classList.remove('error');
+                btnPicture.textContent = "Take Picture";
+            }
+        });
+
+        // Create Collage (Populates thumbnails)
+        btnCollage.addEventListener('click', async () => {
+            btnCollage.textContent = "Generating...";
+            const data = await callApi('createCollage');
+            btnCollage.textContent = "Create Collage";
+
+            // ASSUMPTION: data contains an array called 'imagePaths' with 4 urls
+            // Example response: { "imagePaths": ["/imgs/1.jpg", "/imgs/2.jpg", ...] }
+            if (data && Array.isArray(data.imagePaths)) {
+                thumbnails.forEach((thumb, index) => {
+                    if (data.imagePaths[index]) {
+                        // Add a timestamp to force browser to reload image if path is same
+                        thumb.src = `${BASE_URL}${data.imagePaths[index]}?t=${new Date().getTime()}`;
+                        thumb.classList.add('loaded');
+                    }
+                });
+            } else {
+                 console.error("Collage data format incorrect or missing imagePaths array");
+                 btnCollage.classList.add('error');
+                 setTimeout(() => btnCollage.classList.remove('error'), 1000);
+            }
+        });
+
+        // Other Actions
+        btnlist.addEventListener('click', async () => {
+            await callApi('getPhotoList');
+        });
+
         btnPrint.addEventListener('click', () => callApi('print'));
 
         btnDisconnect.addEventListener('click', async () => {
             const data = await callApi('disconnect');
             if (data && data.isConnected === "false") {
-                btnStatus.classList.remove('connected');
-                btnStatus.textContent = "Check Status";
+                btnConnect.classList.remove('connected');
+                btnConnect.textContent = "Connect";
 
-                // Optional: Reset the setup button too
+                // Reset UI
                 btnSetup.classList.remove('connected', 'error');
                 btnSetup.textContent = "Setup";
                 inputFolder.value = "";
+                isSessionActive = false;
+                btnPicture.classList.remove('connected');
+                fileTxt.textContent = "Selected File: None";
             }
         });
 
     </script>
 </body>
-
 </html>

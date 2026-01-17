@@ -1,6 +1,7 @@
 
 #include "CollageCreate.h"
-#include <regex>
+#include "CameraClient.h"
+
 
 std::string removeExten(const std::string &filename)
 {
@@ -10,24 +11,20 @@ std::string removeExten(const std::string &filename)
 }
 
 void applyOverlay(cv::Mat &background, const cv::Mat &overlay, cv::Point location){
-    for (int y = 0; y < overlay.rows; y++)
+
+    int rows = overlay.rows;
+    int cols = overlay.cols;
+    for (int y = 0; y < rows ; y++)
     {
-        for (int x = 0; x < overlay.cols; x++)
+        for (int x = 0; x < cols; x++)
         {
-            int mainY = location.y + y ;
-            int mainX = location.x + x ;
-
-            // Safety check - dont draw outside the background
-            if(mainY >= background.rows || mainX >= background.cols)continue;
-
-            // get pixel data
             cv::Vec4b overlayPixel = overlay.at<cv::Vec4b>(y,x);
 
             float alpha = overlayPixel[3] / 255.0f;
 
             if(alpha < 0.1) continue;
 
-            cv::Vec3b &bgPixel = background.at<cv::Vec3b>(mainY,mainX);
+            cv::Vec3b &bgPixel = background.at<cv::Vec3b>(y,x);
 
 
             // blend
@@ -41,8 +38,6 @@ void applyOverlay(cv::Mat &background, const cv::Mat &overlay, cv::Point locatio
     
 }
 
-std::string CollageCreate::overlayFileLocation = "overlays/";
-std::string CollageCreate::collageFileLocation = "collages/";
 
 std::string CollageCreate::SinglePortraitCollage(
     const std::string &m_save_path,
@@ -50,10 +45,10 @@ std::string CollageCreate::SinglePortraitCollage(
     const std::string &overlayFileName)
 {
 
-    std::string outputPath = collageFileLocation + removeExten(overlayFileName) + removeExten(imageFileName) + ".png";
+    std::string outputPath = COLLAGE_FILE_LOCATION + removeExten(overlayFileName) + removeExten(imageFileName) + ".png";
 
     cv::Mat originalImage = cv::imread(m_save_path + "/"+ imageFileName);
-    cv::Mat overlayImage = cv::imread(overlayFileLocation + overlayFileName, cv::IMREAD_UNCHANGED);
+    cv::Mat overlayImage = cv::imread(OVERLAY_FILE_LOCATION + overlayFileName, cv::IMREAD_UNCHANGED);
 
     try
     {

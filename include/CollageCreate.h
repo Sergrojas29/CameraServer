@@ -14,7 +14,7 @@ public:
      * @param 
      */
     static std::string  SinglePortraitCollage(
-        const std::string& m_save_path,
+        const std::string& save_path,
         const std::string& imageFileName,
         const std::string& overlayFileName);
 

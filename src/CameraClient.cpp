@@ -1,148 +1,184 @@
 #include "CameraClient.h"
+#include <chrono>
+#include <stdexcept>
+#include <string>
 
-void kill_auto_mount()
-{
-    // This simply asks the shell to kill the volume monitor process
-    // It prevents the OS from "grabbing" the camera
-    system("pkill -f gphoto");
-    system("pkill -f gvfs-gphoto2");
-    system("sleep 1");
+void kill_auto_mount() {
+  // This simply asks the shell to kill the volume monitor process
+  // It prevents the OS from "grabbing" the camera
+  system("pkill -f gphoto");
+  system("pkill -f gvfs-gphoto2");
+  system("sleep 1");
 }
 
-CameraClient::CameraClient() : m_context(gp_context_new())
-{
-    Camera *raw_cam = nullptr;
-    gp_camera_new(&raw_cam);
-    m_camera.reset(raw_cam);
-
-    m_photo_count = 0;
-    m_save_path = ".";
-    m_save_path = "serverPhotos";
-    m_connected = false;
+std::string setSessionId() {
+  const auto now = std::chrono::system_clock::now();
+  // Format into an ISO 8601 string (e.g., 2024-06-15T13:45:30Z)
+  const std::string timestamp_str = std::format("{}", now);
+  return timestamp_str;
 }
 
-CameraClient::~CameraClient()
-{
-    if (m_camera && m_context)
-    {
-        gp_camera_exit(m_camera.get(), m_context.get());
-    }
+void resetArray(std::array<std::string, 4>& array_of_4){
+    std::fill(array_of_4.begin(), array_of_4.end(), std::string(""));
 }
 
-bool CameraClient::setupFolder(std::string folderName)
-{
-    // see if it already folder already exists
-    if (std::filesystem::exists(folderName))
-    {
-        m_save_path = folderName;
-        int count = 0;
-        for (const auto &entry : std::filesystem::directory_iterator(folderName))
-        {
-            if (entry.is_regular_file())
-                count++;
-        }
+CameraClient::CameraClient() : m_context(gp_context_new()) {
+  Camera *raw_cam = nullptr;
+  gp_camera_new(&raw_cam);
+  m_camera.reset(raw_cam);
 
-        m_photo_count = count;
-        return true;
-    }
-    else
-    {
-        std::filesystem::create_directories(folderName);
-        m_save_path = folderName;
-        std::cout << "Saving photos to :" << m_save_path << "\n";
-        return true;
-    }
-    return false;
+  m_photo_count = 0;
+  m_save_path = ".";
+  m_save_path = "serverPhotos";
+  m_connected = false;
+
+  
 }
 
-bool CameraClient::connect()
-{
-    if (isConnected())
-    {
-        // Connected Previously
-        return true;
-    }
-    else
-    {
-        kill_auto_mount();
-        std::cout << "Connection Attempt ... " << std::endl;
-        int ret = gp_camera_init(m_camera.get(), m_context.get());
-        if (ret < GP_OK)
-        {
-            std::cout << "Connection Error: " << ret << std::endl;
-            return false;
-        }
-        std::cout << "Connected Successfully!" << std::endl;
-        return true;
-    }
+CameraClient::~CameraClient() {
+  if (m_camera && m_context) {
+    gp_camera_exit(m_camera.get(), m_context.get());
+  }
 }
 
-std::string CameraClient::capturePhoto()
-{
-    std::cout << "Capturing image" << std::endl;
+bool CameraClient::setupFolder(std::string folderName) {
+  // see if it already folder already exists
+  if (std::filesystem::exists(folderName)) {
+    m_save_path = folderName;
+    int count = 0;
+    for (const auto &entry : std::filesystem::directory_iterator(folderName)) {
+      if (entry.is_regular_file())
+        count++;
+    }
+
+    m_photo_count = count;
+    return true;
+  } else {
+    std::filesystem::create_directories(folderName);
+    m_save_path = folderName;
+    std::cout << "Saving photos to :" << m_save_path << "\n";
+    return true;
+  }
+  return false;
+}
+
+bool CameraClient::connect() {
+  if (isConnected()) {
+    // Connected Previously
+    return true;
+  } else {
+    kill_auto_mount();
+    std::cout << "Connection Attempt ... " << std::endl;
+    int ret = gp_camera_init(m_camera.get(), m_context.get());
+    if (ret < GP_OK) {
+      std::cout << "Connection Error: " << ret << std::endl;
+      return false;
+    }
+    std::cout << "Connected Successfully!" << std::endl;
+    return true;
+  }
+}
+
+bool CameraClient::capturePhoto() {
+  try {
+    if (session.activeSession == false)
+      throw std::runtime_error("No Active Session - Can't Allocate photo");
+        //!add check to not add too many photos
+    if(session.sessionPhotoCount > (PHOTOS_PER_SESSION-1)) throw std::runtime_error("Too many photos take in Session");
 
     CameraFilePath camera_file_path;
     // pointer to camera, Opt , Filepath, pointer to context
-    int ret = gp_camera_capture(m_camera.get(), GP_CAPTURE_IMAGE, &camera_file_path, m_context.get());
+    int ret = gp_camera_capture(m_camera.get(), GP_CAPTURE_IMAGE,
+                                &camera_file_path, m_context.get());
+
+    if (ret < GP_OK) {
+      std::string err = "Camera Capture Fail Error: " + std::to_string(ret);
+      throw std::runtime_error(err);
+    }
+
+    std::cout << "Image capture on camera: "<< camera_file_path.name << std::endl;
+
+    // 5.Download
+    std::cout << "Downloading Image ..." << std::endl;
+
+    // Init Camera File Raw pointer
+    CameraFile *raw_file = nullptr;
+    gp_file_new(&raw_file);
+    std::unique_ptr<CameraFile, FileDeleter> file(raw_file);
+
+    ret = gp_camera_file_get(m_camera.get(), camera_file_path.folder,
+                             camera_file_path.name, GP_FILE_TYPE_NORMAL,
+                             file.get(), m_context.get());
 
     if (ret < GP_OK)
-    {
-        std::cout << "Camera Capture Fail Error: " << ret << std::endl;
-        return "Error";
-    }
-    else
-    {
-        std::cout << "Image capture on camera: " << camera_file_path.folder << "/" << camera_file_path.name << std::endl;
+      throw std::runtime_error("Could NOT download image");
 
-        // 5.Download
-        std::cout << "Downloading Image ..." << std::endl;
+    // 6. save
+    std::string full_path =
+        m_save_path + "/img_" + std::to_string(m_photo_count) + ".jpg";
 
-        // Init Camera File Raw pointer
-        CameraFile *raw_file = nullptr;
-        gp_file_new(&raw_file);
+    gp_file_save(file.get(), full_path.c_str());
+    std::cout << "Success! saved to " << full_path << std::endl;
+    //?is this neccesary?
+    m_photo_count++;
 
-        std::unique_ptr<CameraFile, FileDeleter> file(raw_file);
 
-        ret = gp_camera_file_get(m_camera.get(), camera_file_path.folder,
-                                 camera_file_path.name, GP_FILE_TYPE_NORMAL, file.get(), m_context.get());
 
-        if (ret < GP_OK)
-        {
-            std::cout << "Could NOT download image" << std::endl;
-            return "Error";
-        }
-        else
-        {
-            // 6. save
+    //updateSession
 
-            std::string full_path = m_save_path + "/img_" + std::to_string(m_photo_count) + ".jpg";
+    session.photoPaths[session.sessionPhotoCount] = full_path;
+    session.sessionPhotoCount++;
 
-            gp_file_save(file.get(), full_path.c_str());
-            std::cout << "Success! saved to " << full_path << std::endl;
 
-            m_photo_count++;
-            return full_path;
-        }
-    }
+    return true;
+
+  } catch (const std::exception &e) {
+    std::cerr << "Exception caught: " << e.what() << std::endl;
+    return false;
+  }
+  
 }
 
-std::vector<std::string> CameraClient::getPhotoList()
-{
-    std::vector<std::string> file_list;
-    try
-    {
-        for (const auto &entry : std::filesystem::directory_iterator(m_save_path))
-        {
-            if (std::filesystem::is_regular_file(entry.status()))
-            {
-                file_list.push_back(entry.path().filename().string());
-            }
-        }
+
+
+
+
+std::vector<std::string> CameraClient::getPhotoList() {
+  std::vector<std::string> file_list;
+  try {
+    for (const auto &entry : std::filesystem::directory_iterator(m_save_path)) {
+      if (std::filesystem::is_regular_file(entry.status())) {
+        file_list.push_back(entry.path().filename().string());
+      }
     }
-    catch (const std::filesystem::filesystem_error &e)
-    {
-        std::cerr << "Filesystem error: " << e.what() << std::endl;
-    }
-    return file_list;
+  } catch (const std::filesystem::filesystem_error &e) {
+    std::cerr << "Filesystem error: " << e.what() << std::endl;
+  }
+  return file_list;
 }
 
+bool CameraClient::createSession() {
+  try {
+    if (session.activeSession)
+      throw std::runtime_error("Session Already Active");
+    session.activeSession =true;
+    session.sessionID = setSessionId();
+    session.sessionCount++;
+    session.sessionPhotoCount = 0;
+
+    return true;
+  } catch (const std::exception &e) {
+    std::cerr << "Exception caught: " << e.what() << std::endl;
+    return false;
+  }
+}
+
+bool CameraClient::endSession() {
+  session.activeSession = false;
+  session.sessionPhotoCount = 0;
+
+  resetArray(session.photoPaths);
+  resetArray(session.collagePaths);
+
+  return true;
+}

@@ -351,20 +351,14 @@
             const data = await callApi('createCollage');
             btnCollage.textContent = "Create Collage";
 
-            // ASSUMPTION: data contains an array called 'imagePaths' with 4 urls
-            // Example response: { "imagePaths": ["/imgs/1.jpg", "/imgs/2.jpg", ...] }
-            if (data && Array.isArray(data.imagePaths)) {
-                thumbnails.forEach((thumb, index) => {
-                    if (data.imagePaths[index]) {
-                        // Add a timestamp to force browser to reload image if path is same
-                        thumb.src = `${BASE_URL}${data.imagePaths[index]}?t=${new Date().getTime()}`;
-                        thumb.classList.add('loaded');
-                    }
-                });
+            if (data) {
+                thumbnails.forEach((img, index)=>{
+                    img.src = data.collagePaths[index];
+
+                })
+
             } else {
-                 console.error("Collage data format incorrect or missing imagePaths array");
-                 btnCollage.classList.add('error');
-                 setTimeout(() => btnCollage.classList.remove('error'), 1000);
+                console.log("error")
             }
         });
 

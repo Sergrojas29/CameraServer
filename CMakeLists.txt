@@ -12,6 +12,7 @@ pkg_check_modules(GPHOTO2 REQUIRED libgphoto2)
 pkg_check_modules(CUPS REQUIRED cups)
 find_package(OpenCV REQUIRED)
 find_package(OpenMP REQUIRED)
+find_package(TBB REQUIRED)  
 
 include(FetchContent)
 
@@ -58,6 +59,7 @@ target_link_libraries(camera_server PRIVATE
     ${CUPS_LIBRARIES}
     ${OpenCV_LIBS}
     OpenMP::OpenMP_CXX
+    TBB::tbb                      
     Crow::Crow
     nlohmann_json::nlohmann_json
 )

@@ -1,15 +1,21 @@
 #pragma once
+#include <algorithm>
 #include <array>
 #include <chrono>
+#include <cstddef>
 #include <cstdlib>
+#include <cups/cups.h>
+#include <execution>
 #include <filesystem>
 #include <format>
+#include <future>
 #include <gphoto2/gphoto2.h>
 #include <iostream>
 #include <memory>
 #include <regex>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 inline constexpr int PHOTOS_PER_SESSION = 4;
@@ -56,8 +62,8 @@ private:
   std::unique_ptr<Camera, CameraDeleter> m_camera;
   int m_photo_count;
   bool m_connected;
-  
-  public:
+
+public:
   CameraClient();
   ~CameraClient();
   SessionInfo session;
@@ -76,5 +82,9 @@ private:
   bool endSession();
 
   bool capturePhoto();
+  bool creatCollageList();
+
+  bool printSelectedPhoto(const std::string &filePath);
+
   std::vector<std::string> getPhotoList();
 };

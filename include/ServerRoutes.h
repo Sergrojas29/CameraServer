@@ -38,7 +38,7 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam) {
     return res;
   });
 
-  //Create Session
+  // Create Session
   CROW_ROUTE(app, "/api/createSession")([&cam]() {
     nlohmann::json data;
     data["service"] = "createSession";
@@ -61,11 +61,9 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam) {
 
     bool success = cam.capturePhoto();
 
-
     data["captureStatus"] = success ? "success" : "Error";
-    data["file_paths"] = success ? 
-      nlohmann::json(cam.session.photoPaths)
-      : nlohmann::json("Error");
+    data["file_paths"] = success ? nlohmann::json(cam.session.photoPaths)
+                                 : nlohmann::json("Error");
 
     crow::response res(data.dump());
     res.add_header("Access-Control-Allow-Origin", "*");
@@ -73,48 +71,45 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam) {
     return res;
   });
 
-  // Create Collage
+  // Create Collages
   CROW_ROUTE(app, "/api/createCollage")([&cam]() {
-    nlohmann::json j;
-    j["service"] = "CameraServer";
-    j["isConnected"] = "True";
+    nlohmann::json data;
+    data["service"] = "createCollage";
 
-    CollageCreate::SinglePortraitCollage(cam.m_save_path, "img_2.jpg",
-                                         "Overlay-FlamaLama.png");
+    //!! DEBUG OFF
+    // cam.session.collagePaths = CollageCreate::createSinglePortraitCollageList(
+    //     cam.session.photoPaths,  "Overlay-FlamaLama.png");
 
-    crow::response res(j.dump());
+    data["collagePaths"] = nlohmann::json(cam.session.collagePaths);
+    crow::response res(data.dump());
     res.add_header("Access-Control-Allow-Origin", "*");
 
     return res;
   });
 
   // print
-  CROW_ROUTE(app, "/api/print")([]() {
-    nlohmann::json j;
-    j["service"] = "CameraServer";
-    j["isConnected"] = "true";
+  CROW_ROUTE(app, "/api/print")([&cam]() {
+    nlohmann::json data;
+    data["service"] = "print";
 
     std::cout << "Call to print\n";
 
-    crow::response res(j.dump());
+    cam.printSelectedPhoto(cam.session.collagePaths[3]);
+    crow::response res(data.dump());
 
-    // This allows your browser (port 5500) to read the response
+    
     res.add_header("Access-Control-Allow-Origin", "*");
-
     return res;
   });
 
   CROW_ROUTE(app, "/api/disconnect")([]() {
-    nlohmann::json j;
-    j["service"] = "CameraServer";
-    j["isConnected"] = "false";
+    nlohmann::json data;
+    data["service"] = "disconnect";
 
     std::cout << "Call to Disconnect\n";
-    crow::response res(j.dump());
-
-    // This allows your browser (port 5500) to read the response
+    
+    crow::response res(data.dump());
     res.add_header("Access-Control-Allow-Origin", "*");
-
     return res;
   });
 }

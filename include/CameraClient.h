@@ -1,4 +1,5 @@
 #pragma once
+#include "nlohmann/json.hpp"
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -17,6 +18,8 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <cstddef>
+#include <stdexcept>
 
 inline constexpr int PHOTOS_PER_SESSION = 4;
 inline constexpr std::string OVERLAY_FILE_LOCATION = "overlays/";
@@ -24,9 +27,11 @@ inline constexpr std::string COLLAGE_FILE_LOCATION = "collages/";
 
 struct SessionInfo {
   bool activeSession = false;
-  int sessionCount = 0;
+
   int sessionPhotoCount = 0;
   std::string sessionID = "";
+  std::string CollageTemplate = "";
+
   std::array<std::string, PHOTOS_PER_SESSION> photoPaths = {};
   std::array<std::string, PHOTOS_PER_SESSION> collagePaths = {};
 };

@@ -1,8 +1,9 @@
 #include <iostream>
+
 #include "crow.h"
 #include "CameraClient.h"
 #include "ServerRoutes.h"
-
+#include "RouteModules.h"
 
 
 
@@ -13,6 +14,18 @@ int main() {
 
     //Initialize Server
     crow::SimpleApp app;
+
+    // Debug Routes /debug/
+    crow::Blueprint debugBP = makeDebugBlueprint(myMainCamera);
+    app.register_blueprint(debugBP);
+
+    // Debug Routes /session/
+    crow::Blueprint sessionBP = makeSessionBlueprint(myMainCamera);
+    app.register_blueprint(sessionBP);
+
+    // Debug Routes /session/
+    crow::Blueprint collageBP = makeSessionBlueprint(myMainCamera);
+    app.register_blueprint(collageBP);
 
     //Register Routes
     registerRoutes(app, myMainCamera);

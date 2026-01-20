@@ -8,35 +8,35 @@
 // inline header only
 inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam) {
 
-  // Status Check
-  CROW_ROUTE(app, "/api/connect")([&cam]() {
-    nlohmann::json j;
-    bool success = cam.connect();
+  // // Status Check
+  // CROW_ROUTE(app, "/api/connect")([&cam]() {
+  //   nlohmann::json j;
+  //   bool success = cam.connect();
 
-    j["service"] = "CameraServer";
-    j["isConnected"] = success ? "true" : "false";
+  //   j["service"] = "CameraServer";
+  //   j["isConnected"] = success ? "true" : "false";
 
-    crow::response res(j.dump());
-    res.add_header("Access-Control-Allow-Origin", "*");
-    return res;
-  });
+  //   crow::response res(j.dump());
+  //   res.add_header("Access-Control-Allow-Origin", "*");
+  //   return res;
+  // });
 
-  // setup Folder
-  CROW_ROUTE(app, "/api/setupFolder/<string>")([&cam](std::string folderName) {
-    nlohmann::json data;
-    data["service"] = "CameraServer";
-    data["operation"] = "setupfolder";
+  // // setup Folder
+  // CROW_ROUTE(app, "/api/setupFolder/<string>")([&cam](std::string folderName) {
+  //   nlohmann::json data;
+  //   data["service"] = "CameraServer";
+  //   data["operation"] = "setupfolder";
 
-    bool success = cam.setupFolder(folderName);
+  //   bool success = cam.setupFolder(folderName);
 
-    data["captureStatus"] = success ? "success" : "error";
-    data["file_path"] = success ? folderName : "error";
+  //   data["captureStatus"] = success ? "success" : "error";
+  //   data["file_path"] = success ? folderName : "error";
 
-    crow::response res(data.dump());
-    res.add_header("Access-Control-Allow-Origin", "*");
+  //   crow::response res(data.dump());
+  //   res.add_header("Access-Control-Allow-Origin", "*");
 
-    return res;
-  });
+  //   return res;
+  // });
 
   // Create Session
   CROW_ROUTE(app, "/api/createSession")([&cam]() {

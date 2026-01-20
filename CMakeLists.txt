@@ -40,6 +40,9 @@ set(SOURCE_FILES
     src/main.cpp 
     src/CameraClient.cpp
     src/CollageCreate.cpp
+    src/routes/DebugRoutes.cpp
+    src/routes/SessionRoutes.cpp
+
 )
 
 add_executable(camera_server ${SOURCE_FILES})

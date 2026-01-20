@@ -28,19 +28,8 @@ CameraClient::CameraClient() : m_context(gp_context_new()) {
   m_camera.reset(raw_cam);
 
   m_photo_count = 0;
-  m_save_path = ".";
   m_save_path = "serverPhotos";
   m_connected = false;
-
-  //! debugging __-----------------------------////
-  session.activeSession = true;
-  m_save_path = "test1";
-  session.photoPaths = {"test1/img_0.jpg", "test1/img_1.jpg", "test1/img_2.jpg",
-                        "test1/img_3.jpg"};
-  session.collagePaths = {"collages/Overlay-FlamaLamaimg_0.png",
-                          "collages/Overlay-FlamaLamaimg_1.png",
-                          "collages/Overlay-FlamaLamaimg_2.png",
-                          "collages/Overlay-FlamaLamaimg_3.png"};
 }
 
 CameraClient::~CameraClient() {
@@ -73,7 +62,6 @@ bool CameraClient::setupFolder(std::string folderName) {
 
 bool CameraClient::connect() {
   if (isConnected()) {
-    // Connected Previously
     return true;
   } else {
     kill_auto_mount();
@@ -84,6 +72,7 @@ bool CameraClient::connect() {
       return false;
     }
     std::cout << "Connected Successfully!" << std::endl;
+    m_connected = true;
     return true;
   }
 }
@@ -134,7 +123,7 @@ bool CameraClient::capturePhoto() {
     m_photo_count++;
 
     // updateSession
-
+    std::cout << "SessionPhotoCount"<< session.sessionPhotoCount << std::endl;
     session.photoPaths[session.sessionPhotoCount] = full_path;
     session.sessionPhotoCount++;
 
@@ -176,7 +165,6 @@ bool CameraClient::createSession() {
       throw std::runtime_error("Session Already Active");
     session.activeSession = true;
     session.sessionID = setSessionId();
-    session.sessionCount++;
     session.sessionPhotoCount = 0;
 
     return true;
@@ -189,6 +177,7 @@ bool CameraClient::createSession() {
 bool CameraClient::endSession() {
   session.activeSession = false;
   session.sessionPhotoCount = 0;
+  session.CollageTemplate = "";
 
   resetArray(session.photoPaths);
   resetArray(session.collagePaths);

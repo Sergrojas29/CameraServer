@@ -23,8 +23,8 @@ int main() {
     crow::Blueprint sessionBP = makeSessionBlueprint(myMainCamera);
     app.register_blueprint(sessionBP);
 
-    // Debug Routes /session/
-    crow::Blueprint collageBP = makeSessionBlueprint(myMainCamera);
+    // Debug Routes /Collage/
+    crow::Blueprint collageBP = makeCollageBlueprint(myMainCamera);
     app.register_blueprint(collageBP);
 
     //Register Routes

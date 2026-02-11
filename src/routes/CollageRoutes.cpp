@@ -12,7 +12,7 @@ crow::Blueprint makeCollageBlueprint(CameraClient &cam) {
   ([&cam]() {
     nlohmann::json data;
 
-    data["service"] = "startSession";
+    data["service"] = "createTemplate4";
 
     bool success = cam.createSession();
     data["isSessionStart"] = success ? true : false;

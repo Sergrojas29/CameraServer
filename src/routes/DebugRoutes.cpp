@@ -29,7 +29,7 @@ crow::Blueprint makeDebugBlueprint(CameraClient &cam) {
     //*Call to connect
     bool success = cam.connect();
     data["service"] = "connect";
-    data["isConnected"] = success ? "true" : "false";
+    data["isConnected"] = success ? true : false;
 
     return responseJson200(data);
   });
@@ -67,7 +67,7 @@ crow::Blueprint makeDebugBlueprint(CameraClient &cam) {
     cam.endSession();
 
     data["isTestCapture"] = true;
-    data["error"] = success ? "none" : "Unable to Capture photo";
+    data["success"] = success ? true : false;
 
     return responseJson200(data);
   });
@@ -78,7 +78,7 @@ crow::Blueprint makeDebugBlueprint(CameraClient &cam) {
 
     data["service"] = "testPrint";
 
-    bool success = cam.printSelectedPhoto("testPrint/portrait.2092.Still009.JPG");
+    bool success = cam.printSelectedPhoto("testPrint/DSC08729.JPG");
     data["isPrinting"] = success ? true : false;
     data["error"] = success ? "none" : "Error Connecting to Printer";
 

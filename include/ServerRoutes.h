@@ -39,37 +39,37 @@ inline void registerRoutes(crow::SimpleApp &app, CameraClient &cam) {
   // });
 
   // Create Session
-  CROW_ROUTE(app, "/api/createSession")([&cam]() {
-    nlohmann::json data;
-    data["service"] = "createSession";
-    bool success = cam.createSession();
+  // CROW_ROUTE(app, "/api/createSession")([&cam]() {
+  //   nlohmann::json data;
+  //   data["service"] = "createSession";
+  //   bool success = cam.createSession();
 
-    data["sessionCreated"] = success ? "success" : "error";
-    std::cout << "Create Session\n";
-    crow::response res(data.dump());
+  //   data["sessionCreated"] = success ? "success" : "error";
+  //   std::cout << "Create Session\n";
+  //   crow::response res(data.dump());
 
-    // This allows your browser (port 5500) to read the response
-    res.add_header("Access-Control-Allow-Origin", "*");
+  //   // This allows your browser (port 5500) to read the response
+  //   res.add_header("Access-Control-Allow-Origin", "*");
 
-    return res;
-  });
+  //   return res;
+  // });
 
   // Take Photo
-  CROW_ROUTE(app, "/api/takePhoto")([&cam]() {
-    nlohmann::json data;
-    data["service"] = "CameraServer";
+  // CROW_ROUTE(app, "/api/takePhoto")([&cam]() {
+  //   nlohmann::json data;
+  //   data["service"] = "CameraServer";
 
-    bool success = cam.capturePhoto();
+  //   bool success = cam.capturePhoto();
 
-    data["captureStatus"] = success ? "success" : "Error";
-    data["file_paths"] = success ? nlohmann::json(cam.session.photoPaths)
-                                 : nlohmann::json("Error");
+  //   data["captureStatus"] = success ? "success" : "Error";
+  //   data["file_paths"] = success ? nlohmann::json(cam.session.photoPaths)
+  //                                : nlohmann::json("Error");
 
-    crow::response res(data.dump());
-    res.add_header("Access-Control-Allow-Origin", "*");
+  //   crow::response res(data.dump());
+  //   res.add_header("Access-Control-Allow-Origin", "*");
 
-    return res;
-  });
+  //   return res;
+  // });
 
   // Create Collages
   CROW_ROUTE(app, "/api/createCollage")([&cam]() {

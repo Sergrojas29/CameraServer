@@ -42,6 +42,7 @@ set(SOURCE_FILES
     src/CollageCreate.cpp
     src/routes/DebugRoutes.cpp
     src/routes/SessionRoutes.cpp
+    src/routes/CollageRoutes.cpp
 
 )
 

@@ -3,6 +3,8 @@
 #include "CameraClient.h"
 #include <algorithm>
 #include <array>
+#include <opencv2/core/mat.hpp>
+#include <opencv2/core/types.hpp>
 #include <vector>
 
 std::string removeExten(const std::string &filename) {
@@ -11,8 +13,10 @@ std::string removeExten(const std::string &filename) {
   return result;  
 }
 
-void applyOverlay(cv::Mat &background, const cv::Mat &overlay,
-                  cv::Point location) {
+
+
+
+void applyOverlay(cv::Mat &background, const cv::Mat &overlay) {
 
   int rows = overlay.rows;
   int cols = overlay.cols;
@@ -34,6 +38,11 @@ void applyOverlay(cv::Mat &background, const cv::Mat &overlay,
     }
   }
 }
+
+
+
+
+
 
 std::string
 CollageCreate::SinglePortraitCollage(const std::string &imageFileName,
@@ -68,8 +77,7 @@ CollageCreate::SinglePortraitCollage(const std::string &imageFileName,
     cv::Mat resizeImage;
     cv::resize(originalImage, resizeImage, newSize);
 
-    cv::Point loc(0, 0);
-    applyOverlay(resizeImage, overlayImage, loc);
+    applyOverlay(resizeImage, overlayImage);
 
     bool successs = cv::imwrite(outputPath, resizeImage);
 

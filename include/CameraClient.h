@@ -20,6 +20,7 @@
 #include <vector>
 #include <cstddef>
 #include <stdexcept>
+#include <cpr/cpr.h>
 
 inline constexpr int PHOTOS_PER_SESSION = 4;
 inline constexpr std::string OVERLAY_FILE_LOCATION = "overlays/";

@@ -3,7 +3,7 @@
 # Create the test executable
 add_executable(unit_tests 
     CameraClientTests.cpp
-    # CollageTests.cpp  <-- You can add this later
+    CollageCreateTests.cpp
     # ServerTests.cpp
 )
 

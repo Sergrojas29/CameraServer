@@ -9,7 +9,7 @@ std::optional<std::string> UploadClient::UploadImage(const std::string imagePath
       throw std::runtime_error("ERROR: File not found at: " + std::filesystem::absolute(imagePath).string());
     }
 
-    std::string APIKEY = "";
+    std::string APIKEY = "f19e946fe179e9fb2da37e8ec4126157";
     std::string url = "https://api.imgbb.com/1/upload";
 
     cpr::Response res =

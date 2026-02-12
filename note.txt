@@ -1,0 +1,5 @@
+const char* apiKey = std::getenv("IMGBB_API_KEY");
+if (!apiKey) {
+  std::cerr << "Set IMGBB_API_KEY environment variable" << std::endl;
+  return std::nullopt;
+}

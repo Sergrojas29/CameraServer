@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <cpr/cpr.h>
 #include <cstddef>
 #include <cstdlib>
 #include <cups/cups.h>
@@ -18,23 +19,22 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <cstddef>
-#include <stdexcept>
-#include <cpr/cpr.h>
 
-inline constexpr int PHOTOS_PER_SESSION = 4;
 inline constexpr std::string OVERLAY_FILE_LOCATION = "overlays/";
 inline constexpr std::string COLLAGE_FILE_LOCATION = "collages/";
+inline constexpr std::string DEFUALT_PHOTO_LOCATION = "serverPhotos";
+inline constexpr std::string DEFUALT_COLLAGE_LOCATION = "serverColllages";
 
 struct SessionInfo {
+  std::string save_path = DEFUALT_COLLAGE_LOCATION;
   bool activeSession = false;
 
   int sessionPhotoCount = 0;
   std::string sessionID = "";
   std::string CollageTemplate = "";
 
-  std::array<std::string, PHOTOS_PER_SESSION> photoPaths = {};
-  std::array<std::string, PHOTOS_PER_SESSION> collagePaths = {};
+  std::vector<std::string> photoPaths;
+  std::vector<std::string> collagePaths;
 };
 
 // helper to tell unique_ptr how to free a Camera
@@ -92,5 +92,7 @@ public:
 
   bool printSelectedPhoto(const std::string &filePath);
 
-  std::vector<std::string> getPhotoList();
+  const std::vector<std::string> &getPhotoPaths();
+  const std::vector<std::string> &getCollagePaths();
+
 };

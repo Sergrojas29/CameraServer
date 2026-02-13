@@ -46,25 +46,9 @@ void applyOverlay(cv::Mat &background, cv::Mat &overlay, cv::Point point) {
   }
 }
 
-std::array<std::string, 4> CollageCreate::createSinglePortraitCollageList(
-    const std::array<std::string, PHOTOS_PER_SESSION> &imagePaths,
-    const std::string &overlayFileName) {
-
-  std::cout << "Processing " << PHOTOS_PER_SESSION
-            << " images with parallel STL...\n";
-  std::array<std::string, 4> results = {};
-
-  std::transform(std::execution::par, imagePaths.begin(), imagePaths.end(),
-                 results.begin(), [&overlayFileName](const std::string &img) {
-                   return CollageCreate::SinglePortraitCollage(img,
-                                                               overlayFileName);
-                 });
-
-  return results;
-}
-
 stringOptional CollageCreate::portraitCollage(const std::string &imagePath,
-                                              const std::string &overlayPath) {
+                                              const std::string &overlayPath,
+                                              SessionInfo &SessionInfo) {
   try {
     // Create Object Path Objecst
     std::filesystem::path imageObj(imagePath);
@@ -89,12 +73,16 @@ stringOptional CollageCreate::portraitCollage(const std::string &imagePath,
     applyOverlay(resizeImg, overImg, cv::Point(100, 100));
 
     // TODO Create UUID for Blended Image
-    std::string OutputPath = imageObj.parent_path().string() + "/blended.jpg";
+    std::string OutputPath =
+        SessionInfo.save_path + "/" + imageObj.stem().string() + "blended.jpg";
     bool successs = cv::imwrite(OutputPath, overImg);
 
     if (!successs) {
       throw std::runtime_error("Unable to write Overlay Image");
     }
+
+    // UpdateSession Collage Paths
+    SessionInfo.collagePaths.push_back(OutputPath);
 
     return OutputPath;
 
@@ -106,7 +94,8 @@ stringOptional CollageCreate::portraitCollage(const std::string &imagePath,
 
 stringOptional
 CollageCreate::templateCollage_4(const std::vector<std::string> &imagePaths,
-                                 const std::string &overlayPath) {
+                                 const std::string &overlayPath,
+                                 SessionInfo &SessionInfo) {
   try {
     std::vector<cv::Point> locations = {
         cv::Point(100, 100), cv::Point(2050, 100), cv::Point(100, 3050),
@@ -139,12 +128,15 @@ CollageCreate::templateCollage_4(const std::vector<std::string> &imagePaths,
     // Write Blended Image template4
     //  TODO Create UUID for blended Image
     std::string OutputPath =
-        overlayObj.parent_path().string() + "/4blended.jpg";
+        SessionInfo.save_path + "/" + SessionInfo.sessionID + "4blended.jpg";
     bool successs = cv::imwrite(OutputPath, overImg);
 
     if (!successs) {
       throw std::runtime_error("Unable to write Overlay Image");
     }
+
+    // UpdateSession Collage Paths
+    SessionInfo.collagePaths.push_back(OutputPath);
 
     return OutputPath;
   } catch (const std::exception &e) {

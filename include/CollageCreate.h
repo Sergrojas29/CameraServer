@@ -1,44 +1,33 @@
 #pragma once
 #include "CameraClient.h"
+#include "cpr/session.h"
 #include <algorithm>
 #include <array>
 #include <execution>
-#include <functional>
-#include <opencv2/opencv.hpp>
-#include <stdexcept>
-#include <string>
-#include <optional>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <opencv2/opencv.hpp>
+#include <optional>
+#include <stdexcept>
+#include <string>
 #include <vector>
 
 using stringOptional = std::optional<std::string>;
 
 class CollageCreate {
 private:
+//TODO: Choose where the overlay defualt loaction
   static std::string overlayFileLocation;
   static std::string collageFileLocation;
 
 public:
-  /**
-   * @param
-   */
+  // TODO: Parallel Computeing to be worked out
 
-  // TODO Remove any instance of this method
-  static std::string SinglePortraitCollage(const std::string &imageFileName,
-                                           const std::string &overlayFileName){
-                                            return "NO METHOD";
-                                           };
+  static stringOptional portraitCollage(const std::string &imagePath,const std::string &overlayPath, SessionInfo& SessionInfo);
 
-  static std::array<std::string, PHOTOS_PER_SESSION>
-  createSinglePortraitCollageList(
-      const std::array<std::string, PHOTOS_PER_SESSION> &imagePaths,
-      const std::string &overlayFileName);
+  static stringOptional templateCollage_4(const std::vector<std::string> &imagePaths,const std::string &overlayPath, SessionInfo& SessionInfo);
 
-  static stringOptional portraitCollage(const std::string &imagePath,
-  const std::string &overlayPath);
 
-  static stringOptional templateCollage_4(const std::vector<std::string> &imagePaths,
-  const std::string &overlayPath);
   
 };

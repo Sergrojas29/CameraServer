@@ -1,8 +1,10 @@
 #include "CameraClient.h"
+#include <algorithm>
 #include <chrono>
 #include <stdexcept>
 #include <string>
 
+// FUNC Help Functions
 void kill_auto_mount() {
   // This simply asks the shell to kill the volume monitor process
   // It prevents the OS from "grabbing" the camera
@@ -18,18 +20,28 @@ std::string setSessionId() {
   return timestamp_str;
 }
 
+// TODO Delete Function - Might not be used
 void resetArray(std::array<std::string, 4> &array_of_4) {
   std::fill(array_of_4.begin(), array_of_4.end(), std::string(""));
 }
 
+// FUNC PUBLIC MEMBER
 CameraClient::CameraClient() : m_context(gp_context_new()) {
   Camera *raw_cam = nullptr;
   gp_camera_new(&raw_cam);
   m_camera.reset(raw_cam);
 
+  // Create Inital folder
+  std::filesystem::create_directories(DEFUALT_PHOTO_LOCATION);
+  std::filesystem::create_directories(DEFUALT_COLLAGE_LOCATION);
+
   m_photo_count = 0;
-  m_save_path = "serverPhotos";
+  m_save_path = DEFUALT_PHOTO_LOCATION;
   m_connected = false;
+
+  // Allocate Vector Size
+  session.collagePaths.reserve(6);
+  session.photoPaths.reserve(6);
 }
 
 CameraClient::~CameraClient() {
@@ -40,24 +52,18 @@ CameraClient::~CameraClient() {
 
 // SetupFolder
 bool CameraClient::setupFolder(std::string folderName) {
-  // see if it already folder already exists
-  if (std::filesystem::exists(folderName)) {
-    m_save_path = folderName;
-    int count = 0;
-    for (const auto &entry : std::filesystem::directory_iterator(folderName)) {
-      if (entry.is_regular_file())
-        count++;
-    }
 
-    m_photo_count = count;
-    return true;
-  } else {
-    std::filesystem::create_directories(folderName);
-    m_save_path = folderName;
-    std::cout << "Saving photos to :" << m_save_path << "\n";
-    return true;
-  }
-  return false;
+  std::filesystem::create_directories(folderName);
+  session.save_path = folderName;
+
+  // count any exisiting files
+  m_photo_count =
+      std::count_if(std::filesystem::directory_iterator(m_save_path),
+                    std::filesystem::directory_iterator{},
+                    [](const auto &entry) { return entry.is_regular_file(); });
+
+  std::cout << "Saving Collage photos to :" <<  session.save_path << "\n";
+  return true;
 }
 
 bool CameraClient::connect() {
@@ -81,9 +87,6 @@ bool CameraClient::capturePhoto() {
   try {
     if (session.activeSession == false)
       throw std::runtime_error("No Active Session - Can't Allocate photo");
-    //! add check to not add too many photos
-    if (session.sessionPhotoCount > (PHOTOS_PER_SESSION - 1))
-      throw std::runtime_error("Too many photos take in Session");
 
     CameraFilePath camera_file_path;
     // pointer to camera, Opt , Filepath, pointer to context
@@ -113,18 +116,19 @@ bool CameraClient::capturePhoto() {
     if (ret < GP_OK)
       throw std::runtime_error("Could NOT download image");
 
+    // TODO maybe Add a UUID or TIME name
     // 6. save
     std::string full_path =
         m_save_path + "/img_" + std::to_string(m_photo_count) + ".jpg";
 
     gp_file_save(file.get(), full_path.c_str());
     std::cout << "Success! saved to " << full_path << std::endl;
-    //?is this neccesary?
     m_photo_count++;
 
     // updateSession
-    std::cout << "SessionPhotoCount"<< session.sessionPhotoCount << std::endl;
-    session.photoPaths[session.sessionPhotoCount] = full_path;
+    std::cout << "SessionPhotoCount: " << session.sessionPhotoCount
+              << std::endl;
+    session.photoPaths.push_back(full_path);
     session.sessionPhotoCount++;
 
     return true;
@@ -135,23 +139,10 @@ bool CameraClient::capturePhoto() {
   }
 }
 
-std::vector<std::string> CameraClient::getPhotoList() {
-  std::vector<std::string> file_list;
-  try {
-    for (const auto &entry : std::filesystem::directory_iterator(m_save_path)) {
-      if (std::filesystem::is_regular_file(entry.status())) {
-        file_list.push_back(entry.path().filename().string());
-      }
-    }
-  } catch (const std::filesystem::filesystem_error &e) {
-    std::cerr << "Filesystem error: " << e.what() << std::endl;
-  }
-  return file_list;
-}
 
 bool CameraClient::creatCollageList() {
   try {
-
+    // TODO Add func to create in parallel in the Collage Create section
     return true;
   } catch (const std::exception &e) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
@@ -179,71 +170,77 @@ bool CameraClient::endSession() {
   session.sessionPhotoCount = 0;
   session.CollageTemplate = "";
 
-  resetArray(session.photoPaths);
-  resetArray(session.collagePaths);
+  session.photoPaths.clear();
+  session.collagePaths.clear();
 
   return true;
 }
 
-
 bool CameraClient::printSelectedPhoto(const std::string &filePath) {
-    cups_dest_t *dests = nullptr;
-    cups_option_t *options = nullptr;
-    int num_dests = 0;
-    int num_options = 0;
-    bool success = false;
+  cups_dest_t *dests = nullptr;
+  cups_option_t *options = nullptr;
+  int num_dests = 0;
+  int num_options = 0;
+  bool success = false;
 
-    try {
-      const char *filename = filePath.c_str();
-      const char *job_title = "CollagePrint from booth";
+  try {
+    const char *filename = filePath.c_str();
+    const char *job_title = "CollagePrint from booth";
 
-      // 1. Get Printers
-      num_dests = cupsGetDests(&dests);
-      if (num_dests == 0 || dests == nullptr) {
-        throw std::runtime_error("No printers found on this system.");
-      }
+    // 1. Get Printers
+    num_dests = cupsGetDests(&dests);
+    if (num_dests == 0 || dests == nullptr) {
+      throw std::runtime_error("No printers found on this system.");
+    }
 
-      // 2. Identify Target Printer
-      cups_dest_t *dest = cupsGetDest(nullptr, nullptr, num_dests, dests);
-      if (!dest) {
-        dest = &dests[0];
-        std::cout << "No default printer found. Using: " << dest->name
-                  << std::endl;
-      } else {
-        std::cout << "Target Printer: " << dest->name << std::endl;
-      }
-
-      // 3. Set Options
-      num_options =
-          cupsAddOption("media", "na_index-4x6_4x6in", num_options, &options);
-      num_options = cupsAddOption("MediaType", "Glossy", num_options, &options);
-
-      // 4. Print File
-      std::cout << "Sending job to printer..." << std::endl;
-      int job_id =
-          cupsPrintFile(dest->name, filename, job_title, num_options, options);
-
-      if (job_id == 0) {
-        throw std::runtime_error(std::string("Print failed: ") +
-                                 cupsLastErrorString());
-      }
-
-      std::cout << "Print job submitted successfully (ID: " << job_id << ")"
+    // 2. Identify Target Printer
+    cups_dest_t *dest = cupsGetDest(nullptr, nullptr, num_dests, dests);
+    if (!dest) {
+      dest = &dests[0];
+      std::cout << "No default printer found. Using: " << dest->name
                 << std::endl;
-      success = true;
-
-    } catch (const std::exception &e) {
-      std::cerr << "Printing Error: " << e.what() << std::endl;
-      success = false;
+    } else {
+      std::cout << "Target Printer: " << dest->name << std::endl;
     }
 
-    // 5. Cleanup (Always runs exactly once)
-    if (dests) {
-      cupsFreeDests(num_dests, dests);
-    }
-    if (options) {
-      cupsFreeOptions(num_options, options);
+    // 3. Set Options
+    num_options =
+        cupsAddOption("media", "na_index-4x6_4x6in", num_options, &options);
+    num_options = cupsAddOption("MediaType", "Glossy", num_options, &options);
+
+    // 4. Print File
+    std::cout << "Sending job to printer..." << std::endl;
+    int job_id =
+        cupsPrintFile(dest->name, filename, job_title, num_options, options);
+
+    if (job_id == 0) {
+      throw std::runtime_error(std::string("Print failed: ") +
+                               cupsLastErrorString());
     }
 
-    return success;
+    std::cout << "Print job submitted successfully (ID: " << job_id << ")"
+              << std::endl;
+    success = true;
+
+  } catch (const std::exception &e) {
+    std::cerr << "Printing Error: " << e.what() << std::endl;
+    success = false;
   }
+
+  // 5. Cleanup (Always runs exactly once)
+  if (dests) {
+    cupsFreeDests(num_dests, dests);
+  }
+  if (options) {
+    cupsFreeOptions(num_options, options);
+  }
+
+  return success;
+}
+
+const std::vector<std::string> &CameraClient::getPhotoPaths() {
+  return session.photoPaths;
+};
+const std::vector<std::string> &CameraClient::getCollagePaths() {
+  return session.collagePaths;
+};

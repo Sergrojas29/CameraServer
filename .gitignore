@@ -141,3 +141,8 @@ vite.config.ts.timestamp-*
 
 build/*
 imageTest/*
+serverPhotos/*
+serverCollages/*
+imageTest/DSC08729.JPG
+
+TEST_ONE_SESSION/*

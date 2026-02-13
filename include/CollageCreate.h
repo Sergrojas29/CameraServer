@@ -13,21 +13,23 @@
 #include <string>
 #include <vector>
 
+// TODO: Choose where the overlay defualt loaction
+inline constexpr std::string OVERLAY_FILE_LOCATION = "overlays/";
+inline constexpr std::string COLLAGE_FILE_LOCATION = "collages/";
+
 using stringOptional = std::optional<std::string>;
 
 class CollageCreate {
-private:
-//TODO: Choose where the overlay defualt loaction
-  static std::string overlayFileLocation;
-  static std::string collageFileLocation;
 
+  
 public:
   // TODO: Parallel Computeing to be worked out
 
-  static stringOptional portraitCollage(const std::string &imagePath,const std::string &overlayPath, SessionInfo& SessionInfo);
+  static stringOptional portraitCollage(const std::string &imagePath,
+                                        const std::string &overlayPath,
+                                        SessionInfo &SessionInfo);
 
-  static stringOptional templateCollage_4(const std::vector<std::string> &imagePaths,const std::string &overlayPath, SessionInfo& SessionInfo);
-
-
-  
+  static stringOptional
+  templateCollage_4(const std::vector<std::string> &imagePaths,
+                    const std::string &overlayPath, SessionInfo &SessionInfo);
 };

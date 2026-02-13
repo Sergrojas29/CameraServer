@@ -29,12 +29,11 @@ crow::Blueprint makeSessionBlueprint(CameraClient &cam) {
             throw std::runtime_error("Missing fields 'CollageTemplate'");
           }
 
-          cam.session.CollageTemplate =
-              data["CollageTemplate"].get<std::string>();
+
 
           nlohmann::json response;
           response["status"] = "success";
-          response["received_CollageTemplate"] = cam.session.CollageTemplate;
+
 
           return crow::response(200, response.dump());
 

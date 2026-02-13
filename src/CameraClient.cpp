@@ -155,7 +155,7 @@ bool CameraClient::createSession() {
     if (session.activeSession)
       throw std::runtime_error("Session Already Active");
     session.activeSession = true;
-    session.sessionID = setSessionId();
+    session.sessionID = session.generateUUID();
     session.sessionPhotoCount = 0;
 
     return true;
@@ -168,10 +168,10 @@ bool CameraClient::createSession() {
 bool CameraClient::endSession() {
   session.activeSession = false;
   session.sessionPhotoCount = 0;
-  session.CollageTemplate = "";
 
   session.photoPaths.clear();
   session.collagePaths.clear();
+  session.urlData.clear();
 
   return true;
 }
@@ -244,3 +244,7 @@ const std::vector<std::string> &CameraClient::getPhotoPaths() {
 const std::vector<std::string> &CameraClient::getCollagePaths() {
   return session.collagePaths;
 };
+
+const std::vector<PhotoURLs> &CameraClient::getUrlData(){
+  return session.urlData;
+}

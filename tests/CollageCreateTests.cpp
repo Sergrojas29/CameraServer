@@ -1,7 +1,9 @@
 #include "CollageCreate.h"
+#include "CameraClient.h"
 #include <gtest/gtest.h>
 #include <string>
 #include <vector>
+
 
 // TEST(CollageCreate, RUNONE) {
 //   std::string expectedPath = "imageTest/DSC08729blended.jpg";

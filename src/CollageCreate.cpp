@@ -1,16 +1,8 @@
 
 #include "CollageCreate.h"
 #include "CameraClient.h"
-#include <algorithm>
-#include <array>
-#include <netdb.h>
-#include <opencv2/core/mat.hpp>
-#include <opencv2/core/types.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <optional>
+#include "ImageEffect.h"
 #include <stdexcept>
-#include <string>
-#include <vector>
 
 void applyOverlay(cv::Mat &background, cv::Mat &overlay, cv::Point point) {
   int rows = background.rows;
@@ -143,4 +135,17 @@ CollageCreate::templateCollage_4(const std::vector<std::string> &imagePaths,
     std::cerr << "Exception caught: " << e.what() << std::endl;
     return std::nullopt;
   };
+}
+
+
+bool CollageCreate::creatCollage(SessionInfo& session){
+  try {
+    if (!myFilters.contains(session.imageEffect)) {
+      throw std::runtime_error("Filter DOES NOT EXSIST : " + session.imageEffect);
+    }
+    myFilters.at(session.imageEffect)(session);
+  } catch (const std::exception& e) {
+    std::cerr << "Exception caught: " << e.what() << std::endl;
+    return false;
+  } 
 }

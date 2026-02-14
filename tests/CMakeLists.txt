@@ -5,6 +5,7 @@ add_executable(unit_tests
     CameraClientTests.cpp
     CollageCreateTests.cpp
     SessionInfoTests.cpp
+    UploadTests.cpp
     # ServerTests.cpp
 )
 

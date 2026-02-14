@@ -9,8 +9,8 @@
 
 
 // TODO: Choose where the overlay defualt loaction
-inline constexpr std::string OVERLAY_FILE_LOCATION = "OVERLAYS/";
-inline constexpr std::string COLLAGE_FILE_LOCATION = "collages/";
+inline constexpr std::string OVERLAY_FILE_LOCATION = "OVERLAYS";
+inline constexpr std::string COLLAGE_FILE_LOCATION = "collages";
 
 using ImageEffect = std::function<bool(SessionInfo&)>;
 

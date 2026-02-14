@@ -3,43 +3,46 @@
 #include <optional>
 
 
-
-std::optional<PhotoURLs> UploadClient::UploadImage(const std::string imagePath) {
+// TODO make this function parallel with openMP but watch out for race condition on push_back
+bool UploadClient::UploadImages(SessionInfo& session) {
   try {
-    if (!std::filesystem::exists(imagePath)) {
-      throw std::runtime_error("ERROR: File not found at: " + std::filesystem::absolute(imagePath).string());
-    }
 
     std::string APIKEY = "f19e946fe179e9fb2da37e8ec4126157";
     std::string url = "https://api.imgbb.com/1/upload";
 
-    cpr::Response res =
-        cpr::Post(cpr::Url{url}, cpr::Parameters{{"key", APIKEY}},
-                  cpr::Multipart{cpr::Part{"image", cpr::File{imagePath}}});
 
-    if (res.error || res.status_code != 200) {
-      std::cout << "Response text: " << res.text << std::endl;
-      throw std::runtime_error("Error uploading Image");
-    }
+    for (auto& filePath : session.collagePaths) {
+    
+      cpr::Response res =
+      cpr::Post(cpr::Url{url}, cpr::Parameters{{"key", APIKEY}},
+        cpr::Multipart{cpr::Part{"image", cpr::File{filePath}}});
+        
+        if (res.error || res.status_code != 200) {
+          std::cout << "Response text: " << res.text << std::endl;
+          throw std::runtime_error("Error uploading Image");
+        }
 
-    auto Json = nlohmann::json::parse(res.text);
+        PhotoURLs urlData;
+        auto data = json::parse(res.text);
+        
+        urlData.url = data["data"]["url"];
+        urlData.urlThumb =data["data"]["thumb"]["url"];
+        urlData.timestamp = data["data"]["time"];
+        urlData.url_viewer =data["data"]["url_viewer"];
 
-    PhotoURLs data;
-    data.url = Json["data"]["url"];
-    data.urlThumb =Json["data"]["thumb"]["url"];
-    data.timestamp = Json["data"]["time"];
-    data.url_viewer =Json["data"]["url_viewer"];
+        session.urlData.push_back(urlData);
+        
+      }
 
-
-    return data;
+    return true;
   } catch (const std::exception &e) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
-    return std::nullopt;
+    return false;
   }
 };
 
 
-  bool UploadClient::saveToJSON(const std::string &filename, const PhotoURLs &newEntry) {
+  bool UploadClient::saveToJSON(const std::string &filename, const SessionInfo &newEntry) {
 
     json data;
 

@@ -41,13 +41,13 @@ public:
 
 
   
-  // TODO: Parallel Computeing to be worked out
+  // // TODO: Parallel Computeing to be worked out
 
-  static stringOptional portraitCollage(const std::string &imagePath,
-                                        const std::string &overlayPath,
-                                        SessionInfo &SessionInfo);
+  // static stringOptional portraitCollage(const std::string &imagePath,
+  //                                       const std::string &overlayPath,
+  //                                       SessionInfo &SessionInfo);
 
-  static stringOptional
-  templateCollage_4(const std::vector<std::string> &imagePaths,
-                    const std::string &overlayPath, SessionInfo &SessionInfo);
+  // static stringOptional
+  // templateCollage_4(const std::vector<std::string> &imagePaths,
+  //                   const std::string &overlayPath, SessionInfo &SessionInfo);
 };

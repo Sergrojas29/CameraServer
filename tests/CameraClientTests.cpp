@@ -1,5 +1,6 @@
 #include "CameraClient.h"
 #include "CollageCreate.h"
+#include "SessionInfo.h"
 #include "UploadClient.h"
 #include <gtest/gtest.h>
 #include <iostream>
@@ -20,7 +21,7 @@ TEST(ONE_RUN, CONNECT) {
 
 TEST(ONE_RUN, TAKE_PHOTO) {
 
-  EXPECT_TRUE(TestCamera.createSession("1Template"));
+  EXPECT_TRUE(TestCamera.createSession("PRT_1_SPC_EVENT_FATALE-VERMILIONSKII"));
 
   EXPECT_TRUE(TestCamera.capturePhoto());
   EXPECT_TRUE(TestCamera.capturePhoto());
@@ -30,24 +31,13 @@ TEST(ONE_RUN, TAKE_PHOTO) {
 
 TEST(ONE_RUN, CREATE_COLLAGE) {
 
-  CollageCreate::templateCollage_4(TestCamera.getPhotoPaths(),
-                                   OVERLAY_4_TEMPLATE, TestCamera.session);
-
-  CollageCreate::portraitCollage(TestCamera.session.photoPaths[0],
-                                 OVERLAY_1_TEMPLATE, TestCamera.session);
-  CollageCreate::portraitCollage(TestCamera.session.photoPaths[1],
-                                 OVERLAY_1_TEMPLATE, TestCamera.session);
-  CollageCreate::portraitCollage(TestCamera.session.photoPaths[2],
-                                 OVERLAY_1_TEMPLATE, TestCamera.session);
+  EXPECT_TRUE(CollageCreate::creatCollage(TestCamera.session));
 }
 
 TEST(ONE_RUN, UPLOAD_PHOTOS) {
 
-  for (auto &&collageFile : TestCamera.session.collagePaths) {
-    auto url = UploadClient::UploadImage(collageFile);
-    UploadClient::saveToJSON("db.json", url.value());
-  }
+  EXPECT_TRUE(UploadClient::UploadImages(TestCamera.session));
 
+  UploadClient::saveToJSON("db.json", TestCamera.session);
 }
 
-TEST(ONE_RUN, SAVE_TO_JSON) {}

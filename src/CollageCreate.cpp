@@ -4,138 +4,106 @@
 #include "ImageEffect.h"
 #include <stdexcept>
 
-void applyOverlay(cv::Mat &background, cv::Mat &overlay, cv::Point point) {
-  int rows = background.rows;
-  int cols = background.cols;
 
-  for (int y = 0; y < rows; y++) {
-    for (int x = 0; x < cols; x++) {
-      // Calculate position in in the destination (overlay) image
-      int overlayX = point.x + x;
-      int overlayY = point.y + y;
 
-      // Check bounds to avoid out-of-range access
-      if (overlayX < 0 || overlayX >= overlay.cols || overlayY < 0 ||
-          overlayY >= overlay.rows) {
-        continue;
-      }
+// stringOptional CollageCreate::portraitCollage(const std::string &imagePath,
+//                                               const std::string &overlayPath,
+//                                               SessionInfo &SessionInfo) {
+//   try {
+//     // Create Object Path Objecst
+//     std::filesystem::path imageObj(imagePath);
+//     std::filesystem::path overlayObj(overlayPath);
 
-      // Get references to both pixels
-      cv::Vec4b &overlayPixel = overlay.at<cv::Vec4b>(overlayY, overlayX);
-      cv::Vec3b &bgPixel = background.at<cv::Vec3b>(y, x);
+//     // load Images
+//     cv::Mat img = cv::imread(imageObj.string());
+//     cv::Mat overImg = cv::imread(overlayObj.string(), cv::IMREAD_UNCHANGED);
 
-      float alpha = overlayPixel[3] / 255.0f;
+//     if (overImg.channels() < 4) {
+//       throw std::runtime_error("Overlay Image doesn't have an alpha layer");
+//     }
 
-      // blend
-      for (int c = 0; c < 3; c++) {
-        overlayPixel[c] =
-            (overlayPixel[c] * alpha) + (bgPixel[c] * (1.0f - alpha));
-      }
+//     // Reduce Img Size
+//     cv::Mat resizeImg;
+//     int height = overImg.rows;
+//     int width = overImg.cols;
+//     cv::Size newSize(width - 200, height - 200);
+//     cv::resize(img, resizeImg, newSize);
 
-      // IMPORTANT : the pixel is no longer transparent.
-      overlayPixel[3] = 255;
-    }
-  }
-}
+//     // BlendImage
+//     applyOverlay(resizeImg, overImg, cv::Point(100, 100));
 
-stringOptional CollageCreate::portraitCollage(const std::string &imagePath,
-                                              const std::string &overlayPath,
-                                              SessionInfo &SessionInfo) {
-  try {
-    // Create Object Path Objecst
-    std::filesystem::path imageObj(imagePath);
-    std::filesystem::path overlayObj(overlayPath);
+//     // TODO Create UUID for Blended Image
+//     std::string OutputPath =
+//         SessionInfo.save_path + "/" + imageObj.stem().string() + "blended.jpg";
+//     bool successs = cv::imwrite(OutputPath, overImg);
 
-    // load Images
-    cv::Mat img = cv::imread(imageObj.string());
-    cv::Mat overImg = cv::imread(overlayObj.string(), cv::IMREAD_UNCHANGED);
+//     if (!successs) {
+//       throw std::runtime_error("Unable to write Overlay Image");
+//     }
 
-    if (overImg.channels() < 4) {
-      throw std::runtime_error("Overlay Image doesn't have an alpha layer");
-    }
+//     // UpdateSession Collage Paths
+//     SessionInfo.collagePaths.push_back(OutputPath);
 
-    // Reduce Img Size
-    cv::Mat resizeImg;
-    int height = overImg.rows;
-    int width = overImg.cols;
-    cv::Size newSize(width - 200, height - 200);
-    cv::resize(img, resizeImg, newSize);
+//     return OutputPath;
 
-    // BlendImage
-    applyOverlay(resizeImg, overImg, cv::Point(100, 100));
+//   } catch (const std::exception &e) {
+//     std::cerr << "Exception caught: " << e.what() << std::endl;
+//     return std::nullopt;
+//   }
+// }
 
-    // TODO Create UUID for Blended Image
-    std::string OutputPath =
-        SessionInfo.save_path + "/" + imageObj.stem().string() + "blended.jpg";
-    bool successs = cv::imwrite(OutputPath, overImg);
+// stringOptional
+// CollageCreate::templateCollage_4(const std::vector<std::string> &imagePaths,
+//                                  const std::string &overlayPath,
+//                                  SessionInfo &SessionInfo) {
+//   try {
+//     std::vector<cv::Point> locations = {
+//         cv::Point(100, 100), cv::Point(2050, 100), cv::Point(100, 3050),
+//         cv::Point(2050, 3050)};
 
-    if (!successs) {
-      throw std::runtime_error("Unable to write Overlay Image");
-    }
+//     // Get Overlay file Object
+//     std::filesystem::path overlayObj(overlayPath);
+//     // TODO file checker
 
-    // UpdateSession Collage Paths
-    SessionInfo.collagePaths.push_back(OutputPath);
+//     // Create cv Matrix for overlay png
+//     cv::Mat overImg = cv::imread(overlayObj.string(), cv::IMREAD_UNCHANGED);
 
-    return OutputPath;
+//     int index = 0;
+//     for (auto &&file : imagePaths) {
+//       // Get img file object
+//       std::filesystem::path imageObj(file);
+//       cv::Mat img = cv::imread(imageObj.string());
 
-  } catch (const std::exception &e) {
-    std::cerr << "Exception caught: " << e.what() << std::endl;
-    return std::nullopt;
-  }
-}
+//       // Reduce Img Size
+//       cv::Mat resizeImg;
+//       int height = (overImg.rows / 2) - 150;
+//       int width = (overImg.cols / 2) - 150;
+//       cv::Size newSize(width, height);
+//       cv::resize(img, resizeImg, newSize);
 
-stringOptional
-CollageCreate::templateCollage_4(const std::vector<std::string> &imagePaths,
-                                 const std::string &overlayPath,
-                                 SessionInfo &SessionInfo) {
-  try {
-    std::vector<cv::Point> locations = {
-        cv::Point(100, 100), cv::Point(2050, 100), cv::Point(100, 3050),
-        cv::Point(2050, 3050)};
+//       applyOverlay(resizeImg, overImg, locations[index]);
+//       index++;
+//     }
 
-    // Get Overlay file Object
-    std::filesystem::path overlayObj(overlayPath);
-    // TODO file checker
+//     // Write Blended Image template4
+//     //  TODO Create UUID for blended Image
+//     std::string OutputPath =
+//         SessionInfo.save_path + "/" + SessionInfo.sessionID + "4blended.jpg";
+//     bool successs = cv::imwrite(OutputPath, overImg);
 
-    // Create cv Matrix for overlay png
-    cv::Mat overImg = cv::imread(overlayObj.string(), cv::IMREAD_UNCHANGED);
+//     if (!successs) {
+//       throw std::runtime_error("Unable to write Overlay Image");
+//     }
 
-    int index = 0;
-    for (auto &&file : imagePaths) {
-      // Get img file object
-      std::filesystem::path imageObj(file);
-      cv::Mat img = cv::imread(imageObj.string());
+//     // UpdateSession Collage Paths
+//     SessionInfo.collagePaths.push_back(OutputPath);
 
-      // Reduce Img Size
-      cv::Mat resizeImg;
-      int height = (overImg.rows / 2) - 150;
-      int width = (overImg.cols / 2) - 150;
-      cv::Size newSize(width, height);
-      cv::resize(img, resizeImg, newSize);
-
-      applyOverlay(resizeImg, overImg, locations[index]);
-      index++;
-    }
-
-    // Write Blended Image template4
-    //  TODO Create UUID for blended Image
-    std::string OutputPath =
-        SessionInfo.save_path + "/" + SessionInfo.sessionID + "4blended.jpg";
-    bool successs = cv::imwrite(OutputPath, overImg);
-
-    if (!successs) {
-      throw std::runtime_error("Unable to write Overlay Image");
-    }
-
-    // UpdateSession Collage Paths
-    SessionInfo.collagePaths.push_back(OutputPath);
-
-    return OutputPath;
-  } catch (const std::exception &e) {
-    std::cerr << "Exception caught: " << e.what() << std::endl;
-    return std::nullopt;
-  };
-}
+//     return OutputPath;
+//   } catch (const std::exception &e) {
+//     std::cerr << "Exception caught: " << e.what() << std::endl;
+//     return std::nullopt;
+//   };
+// }
 
 
 bool CollageCreate::creatCollage(SessionInfo& session){
@@ -143,9 +111,10 @@ bool CollageCreate::creatCollage(SessionInfo& session){
     if (!myFilters.contains(session.imageEffect)) {
       throw std::runtime_error("Filter DOES NOT EXSIST : " + session.imageEffect);
     }
-    myFilters.at(session.imageEffect)(session);
+    bool successs = myFilters.at(session.imageEffect)(session);
+    return successs;
   } catch (const std::exception& e) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
     return false;
-  } 
+  }; 
 }

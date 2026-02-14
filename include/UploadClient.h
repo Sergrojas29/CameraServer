@@ -15,7 +15,7 @@ using json = nlohmann::json;
 class UploadClient {
 private:
 public:
-  static std::optional<PhotoURLs> UploadImage(const std::string imagePath);
+  static bool UploadImages(SessionInfo& session);
 
-  static bool saveToJSON(const std::string &filename, const PhotoURLs &newEntry);
+  static bool saveToJSON(const std::string &filename, const SessionInfo &newEntry);
 };

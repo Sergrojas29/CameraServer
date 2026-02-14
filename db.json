@@ -82,5 +82,228 @@
         "url": "test url",
         "urlThumb": "test url thumb",
         "url_viewer": "test url viewer"
+    },
+    {
+        "timestamp": 256323,
+        "url": "test url",
+        "urlThumb": "test url thumb",
+        "url_viewer": "test url viewer"
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/0e1ae3c4-8406-4257-a231-72bf69b62872.jpg",
+            "TEST_ONE_SESSION/9786f77a-e966-4aa3-ad75-2349e0534b15.jpg",
+            "TEST_ONE_SESSION/0558a70b-0b33-41e1-8bb5-6d7dcc786d5a.jpg",
+            "TEST_ONE_SESSION/5fc8a271-de82-42cf-8b1e-6ef323fc0d88.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_4.jpg",
+            "serverPhotos/img_5.jpg",
+            "serverPhotos/img_6.jpg",
+            "serverPhotos/img_7.jpg"
+        ],
+        "sessionID": "0e68c265-5bb9-4eeb-b6dc-ad05428b240a",
+        "sessionPhotoCount": 4,
+        "urlData": []
+    },
+    {
+        "collagePaths": [],
+        "imageEffect": "",
+        "photoPaths": [],
+        "sessionID": "c91aa26a-792c-47a4-adc3-2084b007ea6b",
+        "sessionPhotoCount": 0,
+        "urlData": []
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/dc179467-ea58-4278-aa0d-25e0e7190e9a.jpg",
+            "TEST_ONE_SESSION/f2b13a9c-2689-46e7-89e9-0b1fd54e4425.jpg",
+            "TEST_ONE_SESSION/366764ac-7001-4755-a698-8043312b5bec.jpg",
+            "TEST_ONE_SESSION/2b9f5130-1b5f-461d-8be9-76ea31200bd2.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_8.jpg",
+            "serverPhotos/img_9.jpg",
+            "serverPhotos/img_10.jpg",
+            "serverPhotos/img_11.jpg"
+        ],
+        "sessionID": "203d7573-b629-4d48-a987-d5464ab7e514",
+        "sessionPhotoCount": 4,
+        "urlData": []
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/8648f1d1-ebd9-4e93-9ef2-648958bce3bb.jpg",
+            "TEST_ONE_SESSION/cb3c7979-bf97-4cb9-8e7b-585a36a912b8.jpg",
+            "TEST_ONE_SESSION/5286beb8-3e60-47bd-9d63-adc17570f6c8.jpg",
+            "TEST_ONE_SESSION/1b276ac6-8fdf-42b5-9a97-51eab9e8d09b.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_12.jpg",
+            "serverPhotos/img_13.jpg",
+            "serverPhotos/img_14.jpg",
+            "serverPhotos/img_15.jpg"
+        ],
+        "sessionID": "4b418d98-04b1-48e8-a36c-e650913b1a34",
+        "sessionPhotoCount": 4,
+        "urlData": []
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/f8d321c9-2b98-42fb-b9af-48b6313090ca.jpg",
+            "TEST_ONE_SESSION/29781382-e1ea-4b34-9d4e-984c632c88ca.jpg",
+            "TEST_ONE_SESSION/a714ae49-c013-4c9b-92c2-deeb016822d3.jpg",
+            "TEST_ONE_SESSION/c899af5e-9808-4ada-a33b-04188e2348ab.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_16.jpg",
+            "serverPhotos/img_17.jpg",
+            "serverPhotos/img_18.jpg",
+            "serverPhotos/img_19.jpg"
+        ],
+        "sessionID": "6c4bd283-ba45-45c3-bc53-bcf5285930e7",
+        "sessionPhotoCount": 4,
+        "urlData": []
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/aa380d16-3b49-485a-8ae2-e0a1f5e170b7.jpg",
+            "TEST_ONE_SESSION/7b9bba12-0a91-4c24-9121-de0283d34e30.jpg",
+            "TEST_ONE_SESSION/8f777870-c30f-4122-9dc4-c465ab7dc48e.jpg",
+            "TEST_ONE_SESSION/b5b49bcb-9106-4294-89ca-1cb0e75cec88.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_20.jpg",
+            "serverPhotos/img_21.jpg",
+            "serverPhotos/img_22.jpg",
+            "serverPhotos/img_23.jpg"
+        ],
+        "sessionID": "ea08277b-ee1b-430b-989a-1add7b848c9f",
+        "sessionPhotoCount": 4,
+        "urlData": [
+            {
+                "timestamp": 1771056032,
+                "url": "https://i.ibb.co/whVHnRCx/aa380d16-3b49-485a-8ae2-e0a1f5e170b7.jpg",
+                "urlThumb": "https://i.ibb.co/JjVLYK2M/aa380d16-3b49-485a-8ae2-e0a1f5e170b7.jpg",
+                "url_viewer": "https://ibb.co/JjVLYK2M"
+            },
+            {
+                "timestamp": 1771056034,
+                "url": "https://i.ibb.co/m5nwsdyH/7b9bba12-0a91-4c24-9121-de0283d34e30.jpg",
+                "urlThumb": "https://i.ibb.co/3mxqXVF0/7b9bba12-0a91-4c24-9121-de0283d34e30.jpg",
+                "url_viewer": "https://ibb.co/3mxqXVF0"
+            },
+            {
+                "timestamp": 1771056036,
+                "url": "https://i.ibb.co/HTzGzkW6/8f777870-c30f-4122-9dc4-c465ab7dc48e.jpg",
+                "urlThumb": "https://i.ibb.co/xqjzjRpW/8f777870-c30f-4122-9dc4-c465ab7dc48e.jpg",
+                "url_viewer": "https://ibb.co/xqjzjRpW"
+            },
+            {
+                "timestamp": 1771056039,
+                "url": "https://i.ibb.co/1JLZ90cC/b5b49bcb-9106-4294-89ca-1cb0e75cec88.jpg",
+                "urlThumb": "https://i.ibb.co/TqkcHwyQ/b5b49bcb-9106-4294-89ca-1cb0e75cec88.jpg",
+                "url_viewer": "https://ibb.co/TqkcHwyQ"
+            }
+        ]
+    },
+    {
+        "collagePaths": [
+            "TEST_ONE_SESSION/9716bf89-f088-4414-8358-c5b52a07e24c.jpg",
+            "TEST_ONE_SESSION/be94846b-ce35-4115-83ef-de607e5545f6.jpg",
+            "TEST_ONE_SESSION/44c87524-bea9-4c6b-a1a5-9d89a733e930.jpg",
+            "TEST_ONE_SESSION/658cadb0-1847-4926-a97a-601ab8ec86b0.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "serverPhotos/img_24.jpg",
+            "serverPhotos/img_25.jpg",
+            "serverPhotos/img_26.jpg",
+            "serverPhotos/img_27.jpg"
+        ],
+        "sessionID": "0feb837c-dfa0-4066-8b7f-89b8f2fb30c4",
+        "sessionPhotoCount": 4,
+        "urlData": [
+            {
+                "timestamp": 1771056297,
+                "url": "https://i.ibb.co/JW8Cb0FC/9716bf89-f088-4414-8358-c5b52a07e24c.jpg",
+                "urlThumb": "https://i.ibb.co/qLhx4XFx/9716bf89-f088-4414-8358-c5b52a07e24c.jpg",
+                "url_viewer": "https://ibb.co/qLhx4XFx"
+            },
+            {
+                "timestamp": 1771056300,
+                "url": "https://i.ibb.co/K16HRs4/be94846b-ce35-4115-83ef-de607e5545f6.jpg",
+                "urlThumb": "https://i.ibb.co/gnyCHWq/be94846b-ce35-4115-83ef-de607e5545f6.jpg",
+                "url_viewer": "https://ibb.co/gnyCHWq"
+            },
+            {
+                "timestamp": 1771056302,
+                "url": "https://i.ibb.co/Mx3TzjZv/44c87524-bea9-4c6b-a1a5-9d89a733e930.jpg",
+                "urlThumb": "https://i.ibb.co/S49Tk15j/44c87524-bea9-4c6b-a1a5-9d89a733e930.jpg",
+                "url_viewer": "https://ibb.co/S49Tk15j"
+            },
+            {
+                "timestamp": 1771056304,
+                "url": "https://i.ibb.co/ZRbh8DS5/658cadb0-1847-4926-a97a-601ab8ec86b0.jpg",
+                "urlThumb": "https://i.ibb.co/wZ2KWm7V/658cadb0-1847-4926-a97a-601ab8ec86b0.jpg",
+                "url_viewer": "https://ibb.co/wZ2KWm7V"
+            }
+        ]
+    },
+    {
+        "collagePaths": [
+            "serverColllages/b407f452-3f13-410b-b698-f7ade60d20e4.jpg",
+            "serverColllages/06858512-a7de-4305-a252-06585f549f5a.jpg",
+            "serverColllages/a4ab0340-995c-4e40-9d75-ee92cc21160f.jpg",
+            "serverColllages/86922b1d-f690-47ee-9cfe-6239ad2174ba.jpg",
+            "serverColllages/b640d545-d843-4073-b8cc-440c180e51e0.jpg"
+        ],
+        "imageEffect": "PRT_1_SPC_EVENT_FATALE-VERMILIONSKII",
+        "photoPaths": [
+            "imageTest/DSC08494.jpg",
+            "imageTest/DSC08495.jpg",
+            "imageTest/DSC08496.jpg",
+            "imageTest/DSC08505.jpg",
+            "imageTest/DSC08729.JPG"
+        ],
+        "sessionID": "9b49417a-e5c2-4b8e-b986-fce1680aba9c",
+        "sessionPhotoCount": 0,
+        "urlData": [
+            {
+                "timestamp": 1771057952,
+                "url": "https://i.ibb.co/201bQkpV/a9f03fa1-4538-4fa8-862d-59c3b873a35e.jpg",
+                "urlThumb": "https://i.ibb.co/mrVxwcPZ/a9f03fa1-4538-4fa8-862d-59c3b873a35e.jpg",
+                "url_viewer": "https://ibb.co/mrVxwcPZ"
+            },
+            {
+                "timestamp": 1771057948,
+                "url": "https://i.ibb.co/Tq1LZFt3/c7fd4253-65d6-4a56-b834-a3dbde5213d2.jpg",
+                "urlThumb": "https://i.ibb.co/Z1Sm3kxD/c7fd4253-65d6-4a56-b834-a3dbde5213d2.jpg",
+                "url_viewer": "https://ibb.co/Z1Sm3kxD"
+            },
+            {
+                "timestamp": 1771057954,
+                "url": "https://i.ibb.co/3YY33V7k/b4dd91fa-f469-4fba-93e6-979dc4900f95.jpg",
+                "urlThumb": "https://i.ibb.co/prr77Nxn/b4dd91fa-f469-4fba-93e6-979dc4900f95.jpg",
+                "url_viewer": "https://ibb.co/prr77Nxn"
+            },
+            {
+                "timestamp": 1771058001,
+                "url": "https://i.ibb.co/PzbN3L2V/86922b1d-f690-47ee-9cfe-6239ad2174ba.jpg",
+                "urlThumb": "https://i.ibb.co/zHLrjM3t/86922b1d-f690-47ee-9cfe-6239ad2174ba.jpg",
+                "url_viewer": "https://ibb.co/zHLrjM3t"
+            },
+            {
+                "timestamp": 1771057950,
+                "url": "https://i.ibb.co/MDVkW18K/0b983738-b658-4111-aa34-dfa64be4f479.jpg",
+                "urlThumb": "https://i.ibb.co/PZhG3WTJ/0b983738-b658-4111-aa34-dfa64be4f479.jpg",
+                "url_viewer": "https://ibb.co/PZhG3WTJ"
+            }
+        ]
     }
 ]

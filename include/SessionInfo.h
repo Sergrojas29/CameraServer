@@ -27,8 +27,9 @@ struct SessionInfo {
   
   bool activeSession = false;
 
-  //TODO DO WE NEED A SESSION PHOTO COUNT?
+  //TODO DO WE NEED A SESSION PHOTO COUNT? maybe
   int sessionPhotoCount = 0;
+
   std::string sessionID = "";
   std::string imageEffect = "";
 
@@ -37,7 +38,7 @@ struct SessionInfo {
   std::vector<std::string> collagePaths;
   std::vector<PhotoURLs> urlData;
   
-
+  NLOHMANN_DEFINE_TYPE_INTRUSIVE(SessionInfo, sessionPhotoCount, sessionID, imageEffect, photoPaths, collagePaths,  urlData)
 
 
   static std::string generateUUID() {

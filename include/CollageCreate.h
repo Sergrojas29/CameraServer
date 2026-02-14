@@ -1,5 +1,7 @@
 #pragma once
 #include "CameraClient.h"
+#include "ImageEffect.h"
+
 #include "cpr/session.h"
 #include <algorithm>
 #include <array>
@@ -13,9 +15,6 @@
 #include <string>
 #include <vector>
 
-// TODO: Choose where the overlay defualt loaction
-inline constexpr std::string OVERLAY_FILE_LOCATION = "overlays/";
-inline constexpr std::string COLLAGE_FILE_LOCATION = "collages/";
 
 using stringOptional = std::optional<std::string>;
 
@@ -23,6 +22,11 @@ class CollageCreate {
 
   
 public:
+
+  inline static const auto myFilters = createEffectMap();
+
+
+  
   // TODO: Parallel Computeing to be worked out
 
   static stringOptional portraitCollage(const std::string &imagePath,

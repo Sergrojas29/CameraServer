@@ -20,7 +20,7 @@ TEST(ONE_RUN, CONNECT) {
 
 TEST(ONE_RUN, TAKE_PHOTO) {
 
-  EXPECT_TRUE(TestCamera.createSession());
+  EXPECT_TRUE(TestCamera.createSession("1Template"));
 
   EXPECT_TRUE(TestCamera.capturePhoto());
   EXPECT_TRUE(TestCamera.capturePhoto());

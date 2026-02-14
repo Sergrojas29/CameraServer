@@ -11,7 +11,7 @@ crow::Blueprint makeSessionBlueprint(CameraClient &cam) {
 
     data["service"] = "startSession";
 
-    bool success = cam.createSession();
+    bool success = cam.createSession("1Template");
     data["isSessionStart"] = success ? true : false;
 
     return responseJson200(data);

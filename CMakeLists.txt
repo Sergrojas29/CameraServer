@@ -57,6 +57,7 @@ set(CORE_SOURCES
     src/CameraClient.cpp
     src/CollageCreate.cpp
     src/UploadClient.cpp
+    src/ImageEffect.cpp
     src/routes/DebugRoutes.cpp
     src/routes/SessionRoutes.cpp
     src/routes/CollageRoutes.cpp

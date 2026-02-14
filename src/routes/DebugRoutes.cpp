@@ -62,7 +62,7 @@ crow::Blueprint makeDebugBlueprint(CameraClient &cam) {
       return responseJson200(data);
     }
 
-    cam.createSession();
+    cam.createSession("1Template");
     bool success = cam.capturePhoto();
     cam.endSession();
 

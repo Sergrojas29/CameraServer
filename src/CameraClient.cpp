@@ -13,18 +13,6 @@ void kill_auto_mount() {
   system("sleep 1");
 }
 
-std::string setSessionId() {
-  const auto now = std::chrono::system_clock::now();
-  // Format into an ISO 8601 string (e.g., 2024-06-15T13:45:30Z)
-  const std::string timestamp_str = std::format("{}", now);
-  return timestamp_str;
-}
-
-// TODO Delete Function - Might not be used
-void resetArray(std::array<std::string, 4> &array_of_4) {
-  std::fill(array_of_4.begin(), array_of_4.end(), std::string(""));
-}
-
 // FUNC PUBLIC MEMBER
 CameraClient::CameraClient() : m_context(gp_context_new()) {
   Camera *raw_cam = nullptr;
@@ -35,13 +23,10 @@ CameraClient::CameraClient() : m_context(gp_context_new()) {
   std::filesystem::create_directories(DEFUALT_PHOTO_LOCATION);
   std::filesystem::create_directories(DEFUALT_COLLAGE_LOCATION);
 
-  m_photo_count = 0;
-  m_save_path = DEFUALT_PHOTO_LOCATION;
-  m_connected = false;
-
   // Allocate Vector Size
   session.collagePaths.reserve(6);
   session.photoPaths.reserve(6);
+  session.urlData.reserve(6);
 }
 
 CameraClient::~CameraClient() {
@@ -62,7 +47,7 @@ bool CameraClient::setupFolder(std::string folderName) {
                     std::filesystem::directory_iterator{},
                     [](const auto &entry) { return entry.is_regular_file(); });
 
-  std::cout << "Saving Collage photos to :" <<  session.save_path << "\n";
+  std::cout << "Saving Collage photos to :" << session.save_path << "\n";
   return true;
 }
 
@@ -140,20 +125,12 @@ bool CameraClient::capturePhoto() {
 }
 
 
-bool CameraClient::creatCollageList() {
-  try {
-    // TODO Add func to create in parallel in the Collage Create section
-    return true;
-  } catch (const std::exception &e) {
-    std::cerr << "Exception caught: " << e.what() << std::endl;
-    return false;
-  }
-};
 
-bool CameraClient::createSession() {
+bool CameraClient::createSession(std::string sessionImageEffect) {
   try {
     if (session.activeSession)
       throw std::runtime_error("Session Already Active");
+    session.imageEffect = sessionImageEffect;
     session.activeSession = true;
     session.sessionID = session.generateUUID();
     session.sessionPhotoCount = 0;
@@ -169,6 +146,7 @@ bool CameraClient::endSession() {
   session.activeSession = false;
   session.sessionPhotoCount = 0;
 
+  session.imageEffect = "";
   session.photoPaths.clear();
   session.collagePaths.clear();
   session.urlData.clear();
@@ -245,6 +223,6 @@ const std::vector<std::string> &CameraClient::getCollagePaths() {
   return session.collagePaths;
 };
 
-const std::vector<PhotoURLs> &CameraClient::getUrlData(){
+const std::vector<PhotoURLs> &CameraClient::getUrlData() {
   return session.urlData;
 }

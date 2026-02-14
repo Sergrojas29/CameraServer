@@ -7,14 +7,14 @@ class CameraClient {
 private:
   std::unique_ptr<GPContext, ContextDeleter> m_context;
   std::unique_ptr<Camera, CameraDeleter> m_camera;
-  int m_photo_count;
-  bool m_connected;
+  int m_photo_count = 0;
+  bool m_connected = false;
 
 public:
   CameraClient();
   ~CameraClient();
   SessionInfo session;
-  std::string m_save_path;
+  std::string m_save_path = DEFUALT_PHOTO_LOCATION;
 
   /**
    * @brief Create or Set File path
@@ -25,11 +25,10 @@ public:
   bool isConnected() const { return m_connected; }
   bool setupFolder(std::string folderName);
 
-  bool createSession();
+  bool createSession(std::string sessionImageEffect);
   bool endSession();
 
   bool capturePhoto();
-  bool creatCollageList();
 
   bool printSelectedPhoto(const std::string &filePath);
 

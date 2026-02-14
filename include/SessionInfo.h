@@ -27,9 +27,12 @@ struct SessionInfo {
   
   bool activeSession = false;
 
+  //TODO DO WE NEED A SESSION PHOTO COUNT?
   int sessionPhotoCount = 0;
   std::string sessionID = "";
+  std::string imageEffect = "";
 
+  //PATHS
   std::vector<std::string> photoPaths;
   std::vector<std::string> collagePaths;
   std::vector<PhotoURLs> urlData;

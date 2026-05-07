@@ -1,5 +1,5 @@
 # CamaraClient
-For real for real serve to photobooth
+Server for multi camera studio
 
 
 
